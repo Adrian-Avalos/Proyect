@@ -7,11 +7,26 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
   <meta name="background-color" content="#ffffff">
+
+  <!-- Manifest y íconos para PWA -->
   <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="imagenes/icono.ico">
-  <link rel="icon" type="image/x-icon" href="imagenes/icono.ico">
+  <link rel="apple-touch-icon" href="imagenes/icono-apple.png">
+  <link rel="icon" type="image/png" href="imagenes/icono-192.png">
+
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Registrar el service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
+
   <style>
     body {
       height: 100vh;
@@ -39,14 +54,17 @@
     .img6 { bottom: 25%; right: 30%; animation-delay: 3s; }
     .img7 { top: 5%; right: 40%; animation-delay: 5s; }
     .img8 { bottom: 5%; left: 10%; animation-delay: 7s; }
+
     @keyframes float {
       0% { transform: translateY(0); }
       50% { transform: translateY(-30px); }
       100% { transform: translateY(0); }
     }
+
     .titulo-animado {
       animation: fadeInScale 2s ease-out;
     }
+
     @keyframes fadeInScale {
       0% { opacity: 0; transform: scale(0.8); }
       100% { opacity: 1; transform: scale(1); }
@@ -55,6 +73,7 @@
 </head>
 <body>
 
+  <!-- Imágenes decorativas -->
   <img src="imagenes/comida1.png" class="floating-img img1" alt="Comida 1">
   <img src="imagenes/comida2.png" class="floating-img img2" alt="Comida 2">
   <img src="imagenes/comida3.png" class="floating-img img3" alt="Comida 3">
@@ -64,6 +83,7 @@
   <img src="imagenes/comida3.png" class="floating-img img7" alt="Comida 7">
   <img src="imagenes/comida4.png" class="floating-img img8" alt="Comida 8">
 
+  <!-- Formulario de inicio de sesión -->
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
@@ -87,6 +107,7 @@
     </div>
   </div>
 
+  <!-- Validación JS -->
   <script>
     function validarLogin(event) {
       event.preventDefault();
@@ -96,7 +117,7 @@
       const contrasenaValida = "123";
 
       if (user === usuarioValido && pass === contrasenaValida) {
-        window.location.href = "menu.html";
+        location.assign("menu.html"); // evita salir del modo app
       } else {
         alert("Usuario o contraseña incorrectos");
       }
@@ -104,6 +125,7 @@
     }
   </script>
 
+  <!-- JS Bootstrap -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
