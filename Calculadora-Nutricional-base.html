@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icono.ico">
+  <link rel="icon" type="image/x-icon" href="icono.ico">
+  <title>Calculadora Nutricional Completa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+
+
+<div class="container mb-5">
+  <div class="d-flex gap-3 justify-content-center mt-4">
+    <a href="agregar-alimento.html" class="btn btn-outline-primary">➕ Agregar nuevo alimento</a>
+  </div>
+</div>
+
+
+  <div class="d-flex gap-2 mb-4">
+    <a href="menu.html" class="btn btn-secondary flex-fill">🔙 Volver al inicio</a>
+  </div>
+
+    <h2 class="text-center mb-4">🍽️ Calculadora Nutricional Completa</h2>
+
+    <!-- Selector de archivo JS -->
+    <div class="mb-4">
+      <label for="archivoJS" class="form-label fw-bold">📂 Seleccioná el archivo de alimentos (.js):</label>
+      <input type="file" id="archivoJS" class="form-control" accept=".js" />
+      <small class="text-muted">Debe contener: <code>const baseDatos = {...};</code> o <code>var baseDatos = {...};</code></small>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <select id="categoria" class="form-select" onchange="cargarAlimentos()">
+          <option value="">Seleccionar categoría</option>
+          <option value="LÁCTEOS">LÁCTEOS</option>
+          <option value="HUEVOS">HUEVOS</option>
+          <option value="CARNE - AVES">CARNE - AVES</option>
+          <option value="CARNE - VACUNA">CARNE - VACUNA</option>
+          <option value="CARNE - PESCADO">CARNE - PESCADO</option>
+          <option value="VEGETALES A">VEGETALES A</option>
+          <option value="VEGETALES B">VEGETALES B</option>
+          <option value="VEGETALES C">VEGETALES C</option>
+          <option value="FRUTAS A">FRUTAS A</option>
+          <option value="FRUTAS B">FRUTAS B</option>
+          <option value="FRUTAS C">FRUTAS C</option>
+          <option value="FRUTOS SECOS">FRUTOS SECOS</option>
+          <option value="CEREALES">CEREALES</option>
+          <option value="PANIFICADOS">PANIFICADOS</option>
+          <option value="DULCES">DULCES</option>
+          <option value="GRASAS">GRASAS</option>
+          <option value="OTROS">OTROS</option>
+        </select>
+      </div>
+      <div class="col-md-8">
+        <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento..." oninput="filtrarAlimentos()" />
+      </div>
+    </div>
+
+    <!-- SELECCIÓN Y CARGA -->
+    <div class="row g-2 align-items-center mb-3">
+      <div class="col-md-5">
+        <select id="alimento-select" class="form-select">
+          <option value="">Seleccioná un alimento</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input type="number" id="gramos" class="form-control" placeholder="Cantidad" />
+        <small id="unidad-info" class="text-muted ms-1"></small>
+      </div>
+      <div class="col-md-4">
+        <button onclick="agregarAlimento()" class="btn btn-primary w-100">➕ Agregar alimento</button>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive mb-3">
+      <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Alimento</th>
+            <th>Cantidad</th>
+            <th>Calorías</th>
+            <th>HC (g)</th>
+            <th>Prot. (g)</th>
+            <th>Grasa (g)</th>
+            <th>Na (mg)</th>
+            <th>K (mg)</th>
+            <th>P (mg)</th>
+            <th>Ca (mg)</th>
+            <th>Fe (mg)</th>
+            <th>Colest (mg)</th>
+            <th>Purinas (mg)</th>
+            <th>Fibra (g)</th>
+            <th>Agua (g)</th>
+            <th>A.Fólic (µg)</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-alimentos"></tbody>
+      </table>
+    </div>
+
+    <!-- TOTALES -->
+    <div id="totales" class="text-center fw-bold fs-5">
+      Totales: 0 cal | 0g HC | 0g Prot | 0g Grasas | 0mg Na | 0mg K | 0mg P | 0mg Ca | 0mg Fe | 0mg Colest | 0mg Purinas | 0g Fibra | 0g Agua | 0µg A.Fólic
+    </div>
+  </div>
+
+  <!-- SCRIPT PRINCIPAL -->
+  <script>
+    let baseDatos = {};
+    let alimentosSeleccionados = [];
+
+    // Leer archivo JS y extraer baseDatos
+    document.getElementById("archivoJS").addEventListener("change", async function () {
+      const file = this.files[0];
+      if (!file) return;
+      const text = await file.text();
+
+      try {
+        // Usamos Function en vez de eval para mayor seguridad
+        const load = new Function(text + "; return typeof baseDatos !== 'undefined' ? baseDatos : {};");
+        baseDatos = load();
+        alert("✅ Archivo cargado correctamente");
+      } catch (err) {
+        alert("⚠️ Error al procesar el archivo:\n" + err.message);
+      }
+    });
+
+    function cargarAlimentos(){
+      const categoria = document.getElementById('categoria').value;
+      const select = document.getElementById('alimento-select');
+      select.innerHTML = '<option value="">Seleccioná un alimento</option>';
+      if (!categoria || !baseDatos[categoria]) return;
+      Object.keys(baseDatos[categoria]).forEach(alimento => {
+        const opt = document.createElement('option');
+        opt.value = alimento;
+        opt.textContent = alimento;
+        select.appendChild(opt);
+      });
+    }
+
+    function agregarAlimento(){
+      const categoria = document.getElementById('categoria').value;
+      const alimentoNombre = document.getElementById('alimento-select').value;
+      const cantidad = parseFloat(document.getElementById('gramos').value);
+
+      if (!cantidad || cantidad <= 0) {
+        alert('Por favor, ingresá una cantidad válida.');
+        return;
+      }
+
+      const alimento = baseDatos[categoria]?.[alimentoNombre];
+      if (!alimento) {
+        alert("⚠️ No se encontró el alimento en los datos cargados.");
+        return;
+      }
+
+      const factor = cantidad / alimento.medida;
+      alimentosSeleccionados.push({ nombre: alimentoNombre, cantidad, unidad: alimento.unidad, ...alimento, factor });
+      actualizarTabla();
+    }
+
+    function eliminarAlimento(index){
+      alimentosSeleccionados.splice(index, 1);
+      actualizarTabla();
+    }
+
+    function modificarCantidad(index){
+      const nuevaCantidad = prompt("Ingresá la nueva cantidad:", alimentosSeleccionados[index].cantidad);
+      if (nuevaCantidad && !isNaN(nuevaCantidad) && nuevaCantidad > 0) {
+        alimentosSeleccionados[index].cantidad = parseFloat(nuevaCantidad);
+        alimentosSeleccionados[index].factor = alimentosSeleccionados[index].cantidad / alimentosSeleccionados[index].medida;
+        actualizarTabla();
+      }
+    }
+
+    function actualizarTabla(){
+      const tabla = document.getElementById('tabla-alimentos');
+      tabla.innerHTML = '';
+      alimentosSeleccionados.forEach((a, i) => {
+        tabla.innerHTML += `<tr>
+          <td>${a.nombre}</td>
+          <td>${a.cantidad} ${a.unidad}</td>
+          <td>${(a.calorias*a.factor).toFixed(1)}</td>
+          <td>${(a.hc*a.factor).toFixed(1)}</td>
+          <td>${(a.proteinas*a.factor).toFixed(1)}</td>
+          <td>${(a.grasas*a.factor).toFixed(1)}</td>
+          <td>${(a.na*a.factor).toFixed(1)}</td>
+          <td>${(a.k*a.factor).toFixed(1)}</td>
+          <td>${(a.p*a.factor).toFixed(1)}</td>
+          <td>${(a.ca*a.factor).toFixed(1)}</td>
+          <td>${(a.fe*a.factor).toFixed(1)}</td>
+          <td>${(a.colest*a.factor).toFixed(1)}</td>
+          <td>${(a.purinas*a.factor).toFixed(1)}</td>
+          <td>${(a.fibra*a.factor).toFixed(1)}</td>
+          <td>${(a.agua*a.factor).toFixed(1)}</td>
+          <td>${(a.afolic*a.factor).toFixed(1)}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="modificarCantidad(${i})">✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarAlimento(${i})">❌</button>
+          </td>
+        </tr>`;
+      });
+      calcularTotales();
+    }
+
+    function calcularTotales(){
+      const totales = { calorias:0, hc:0, proteinas:0, grasas:0, na:0, k:0, p:0, ca:0, fe:0, colest:0, purinas:0, fibra:0, agua:0, afolic:0 };
+      alimentosSeleccionados.forEach(a => {
+        for(let key in totales){
+          const valor = a[key];
+          totales[key] += (valor != null ? valor : 0) * a.factor;
+        }
+      });
+      document.getElementById('totales').textContent =
+        `Totales: ${totales.calorias.toFixed(1)} cal | ${totales.hc.toFixed(1)}g HC | ${totales.proteinas.toFixed(1)}g Prot | ${totales.grasas.toFixed(1)}g Grasas | ` +
+        `${totales.na.toFixed(1)}mg Na | ${totales.k.toFixed(1)}mg K | ${totales.p.toFixed(1)}mg P | ${totales.ca.toFixed(1)}mg Ca | ${totales.fe.toFixed(1)}mg Fe | ` +
+        `${totales.colest.toFixed(1)}mg Colest | ${totales.purinas.toFixed(1)}mg Purinas | ${totales.fibra.toFixed(1)}g Fibra | ${totales.agua.toFixed(1)}g Agua | ${totales.afolic.toFixed(1)}µg A.Fólic`;
+    }
+
+    function filtrarAlimentos(){
+      cargarAlimentos();
+    }
+  </script>
+
+</body>
+</html>

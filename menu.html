@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icono.ico">
+  <link rel="icon" type="image/x-icon" href="icono.ico">
+  <title>Menú Radial con Explosión y Sonido</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: url('imagenes/fondo-comida.gif') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .menu-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
+
+    .menu-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 40px;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 18px;
+      z-index: 10;
+    }
+
+    .menu-item {
+      position: absolute;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .menu-container.active .menu-item {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .item1 { top: 15%; left: 50%; }
+    .item2 { top: 30%; left: 85%; }
+    .item3 { top: 65%; left: 85%; }
+    .item4 { top: 85%; left: 50%; }
+    .item5 { top: 65%; left: 15%; }
+    .item6 { top: 30%; left: 15%; }
+
+    /* Partículas */
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: rgba(0, 123, 255, 0.6);
+      border-radius: 50%;
+      animation: explode 0.7s ease-out forwards;
+      z-index: 1;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--x), var(--y)) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .menu-container {
+        transform: scale(0.9);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Menú -->
+  <div class="menu-container" id="radialMenu">
+    <button class="btn btn-success menu-button" onclick="toggleMenuWithExplosion()">..::MENU::..</button>
+
+    <a href="Calculadora-Nutricional.html" class="menu-item item1">Calculadora Nutricional</a>
+    <a href="agregar-alimento.html" class="menu-item item2">Agregar Alimento</a>
+   <a href=" #" class="menu-item item3">Opción 3</a>
+    <a href="Calculadora-Nutricional-base.html" class="menu-item item4">Calculadora Nutricional Base</a>
+    <a href=" #" class="menu-item item5">Opción 5</a>
+    <a href=" #" class="menu-item item6">Opción 6</a>
+  </div>
+
+  <!-- Audio -->
+  <audio id="clickSound" src="sonido/sonido.wav" preload="auto"></audio>
+
+  <!-- JS -->
+  <script>
+    function toggleMenuWithExplosion() {
+      const menu = document.getElementById("radialMenu");
+      menu.classList.toggle("active");
+      createExplosion(menu.offsetWidth / 2, menu.offsetHeight / 2, menu);
+      document.getElementById("clickSound").play();
+    }
+
+    function createExplosion(centerX, centerY, container) {
+      for (let i = 0; i < 20; i++) {
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 120 + 30;
+        const x = Math.cos(angle) * distance + "px";
+        const y = Math.sin(angle) * distance + "px";
+
+        particle.style.setProperty('--x', x);
+        particle.style.setProperty('--y', y);
+        particle.style.left = centerX + "px";
+        particle.style.top = centerY + "px";
+
+        container.appendChild(particle);
+
+        setTimeout(() => {
+          particle.remove();
+        }, 700);
+      }
+    }
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
