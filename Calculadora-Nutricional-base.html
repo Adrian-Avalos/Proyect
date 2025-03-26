@@ -12,18 +12,14 @@
 </head>
 <body class="bg-light">
 
+  <div class="container mb-5">
+    <div class="d-flex gap-3 justify-content-center mt-4">
+      <a href="agregar-alimento.html" class="btn btn-outline-primary">➕ Agregar nuevo alimento</a>
+    </div>
 
-
-<div class="container mb-5">
-  <div class="d-flex gap-3 justify-content-center mt-4">
-    <a href="agregar-alimento.html" class="btn btn-outline-primary">➕ Agregar nuevo alimento</a>
-  </div>
-</div>
-
-
-  <div class="d-flex gap-2 mb-4">
-    <a href="menu.html" class="btn btn-secondary flex-fill">🔙 Volver al inicio</a>
-  </div>
+    <div class="d-flex gap-2 mb-4 mt-4">
+      <a href="menu.html" class="btn btn-secondary flex-fill">🔙 Volver al inicio</a>
+    </div>
 
     <h2 class="text-center mb-4">🍽️ Calculadora Nutricional Completa</h2>
 
@@ -118,14 +114,12 @@
     let baseDatos = {};
     let alimentosSeleccionados = [];
 
-    // Leer archivo JS y extraer baseDatos
     document.getElementById("archivoJS").addEventListener("change", async function () {
       const file = this.files[0];
       if (!file) return;
       const text = await file.text();
 
       try {
-        // Usamos Function en vez de eval para mayor seguridad
         const load = new Function(text + "; return typeof baseDatos !== 'undefined' ? baseDatos : {};");
         baseDatos = load();
         alert("✅ Archivo cargado correctamente");
