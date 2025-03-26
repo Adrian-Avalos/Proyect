@@ -5,10 +5,12 @@ const urlsToCache = [
   "manifest.json",
   "imagenes/icono.png",
   "imagenes/icono.png",
+  "imagenes/icono.png",
   "imagenes/icono.ico",
   "imagenes/fondo-comida.gif",
   "js/login.js",
-  "js/menu.js"
+  "js/menu.js",
+  "sonido/sonido.wav"
 ];
 
 self.addEventListener("install", event => {
