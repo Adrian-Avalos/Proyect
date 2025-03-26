@@ -3,9 +3,9 @@ const urlsToCache = [
   "index.html",
   "menu.html",
   "manifest.json",
-  "imagenes/icono-192.png",
-  "imagenes/icono-512.png",
-  "imagenes/icono-apple.png",
+  "imagenes/icono.png",
+  "imagenes/icono.png",
+  "imagenes/icono.ico",
   "imagenes/fondo-comida.gif",
   "js/login.js",
   "js/menu.js"
