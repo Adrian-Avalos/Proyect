@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#28a745">
-  <meta name="background-color" content="#ffffff">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="imagenes/icono.ico">
-  <link rel="icon" type="image/x-icon" href="imagenes/icono.ico">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#28a745" />
+  <meta name="background-color" content="#ffffff" />
+
+  <!-- Manifest e íconos PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="imagenes/icono-apple.png" />
+  <link rel="icon" type="image/png" href="imagenes/icono-192.png" />
+
   <title>Menú Nutrición</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
+
   <style>
     body {
       background: url('imagenes/fondo-comida.gif') no-repeat center center fixed;
@@ -64,6 +79,7 @@
     .item4 { top: 85%; left: 50%; }
     .item5 { top: 65%; left: 15%; }
     .item6 { top: 30%; left: 15%; }
+
     .particle {
       position: absolute;
       width: 10px;
@@ -73,10 +89,12 @@
       animation: explode 0.7s ease-out forwards;
       z-index: 1;
     }
+
     @keyframes explode {
       0% { transform: translate(0, 0) scale(1); opacity: 1; }
       100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
     }
+
     @media (max-width: 576px) {
       .menu-container {
         transform: scale(0.9);
@@ -105,19 +123,24 @@
       createExplosion(menu.offsetWidth / 2, menu.offsetHeight / 2, menu);
       document.getElementById("clickSound").play();
     }
+
     function createExplosion(centerX, centerY, container) {
       for (let i = 0; i < 20; i++) {
         const particle = document.createElement("div");
         particle.classList.add("particle");
+
         const angle = Math.random() * 2 * Math.PI;
         const distance = Math.random() * 120 + 30;
         const x = Math.cos(angle) * distance + "px";
         const y = Math.sin(angle) * distance + "px";
+
         particle.style.setProperty('--x', x);
         particle.style.setProperty('--y', y);
         particle.style.left = centerX + "px";
         particle.style.top = centerY + "px";
+
         container.appendChild(particle);
+
         setTimeout(() => particle.remove(), 700);
       }
     }
