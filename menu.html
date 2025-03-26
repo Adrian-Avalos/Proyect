@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" href="icono.ico">
-  <link rel="icon" type="image/x-icon" href="icono.ico">
+  <link rel="apple-touch-icon" href="imagenes/icono.ico">
+  <link rel="icon" type="image/x-icon" href="imagenes/icono.ico">
   <title>Menú Radial con Explosión y Sonido</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     body {
       background: url('imagenes/fondo-comida.gif') no-repeat center center fixed;
@@ -18,6 +19,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      margin: 0;
     }
 
     .menu-container {
@@ -66,7 +68,6 @@
     .item5 { top: 65%; left: 15%; }
     .item6 { top: 30%; left: 15%; }
 
-    /* Partículas */
     .particle {
       position: absolute;
       width: 10px;
@@ -78,14 +79,8 @@
     }
 
     @keyframes explode {
-      0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translate(var(--x), var(--y)) scale(0.5);
-        opacity: 0;
-      }
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
     }
 
     @media (max-width: 576px) {
@@ -97,22 +92,19 @@
 </head>
 <body>
 
-  <!-- Menú -->
   <div class="menu-container" id="radialMenu">
     <button class="btn btn-success menu-button" onclick="toggleMenuWithExplosion()">..::MENU::..</button>
 
     <a href="Calculadora-Nutricional.html" class="menu-item item1">Calculadora Nutricional</a>
     <a href="agregar-alimento.html" class="menu-item item2">Agregar Alimento</a>
-   <a href=" #" class="menu-item item3">Opción 3</a>
-    <a href="Calculadora-Nutricional-base.html" class="menu-item item4">Calculadora Nutricional Base</a>
-    <a href=" #" class="menu-item item5">Opción 5</a>
-    <a href=" #" class="menu-item item6">Opción 6</a>
+    <a href="#" class="menu-item item3">Opción 3</a>
+    <a href="Calculadora-Nutricional-base.html" class="menu-item item4">Calculadora Base</a>
+    <a href="#" class="menu-item item5">Opción 5</a>
+    <a href="#" class="menu-item item6">Opción 6</a>
   </div>
 
-  <!-- Audio -->
   <audio id="clickSound" src="sonido/sonido.wav" preload="auto"></audio>
 
-  <!-- JS -->
   <script>
     function toggleMenuWithExplosion() {
       const menu = document.getElementById("radialMenu");
@@ -145,7 +137,6 @@
     }
   </script>
 
-  <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
