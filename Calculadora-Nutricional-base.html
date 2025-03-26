@@ -14,8 +14,8 @@
 </head>
 <body class="bg-light">
 
-<div class="container mt-4 mb-5" id="contenido-pdf">
-  <div class="d-flex gap-3 justify-content-center mb-4">
+  <div class="container mt-5 mb-5" id="contenido-pdf">
+    <div class="d-flex gap-2 mb-4">
     <a href="agregar-alimento.html" class="btn btn-outline-primary">➕ Agregar nuevo alimento</a>
     <a href="menu.html" class="btn btn-secondary">🔙 Volver al inicio</a>
     <button onclick="generarPDF()" id="btn-pdf" class="btn btn-danger">📄 Descargar PDF</button>
@@ -238,22 +238,23 @@ function actualizarGrafico(totales) {
   });
 }
 
-function generarPDF() {
-  const element = document.getElementById('contenido-pdf');
-  const opt = {
-    margin: 0.5,
-    filename: 'reporte-nutricional.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
-  html2pdf().set(opt).from(element).save();
-}
-
 function filtrarAlimentos(){
-  cargarAlimentos();
-}
-</script>
+      cargarAlimentos();
+    }
+
+    function generarPDF() {
+      const element = document.getElementById('contenido-pdf');
+      setTimeout(() => {
+        html2pdf().set({
+          margin: 0.5,
+          filename: 'reporte-nutricional.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        }).from(element).save();
+      }, 500); // Espera para que se renderice el canvas
+    }
+  </script>
 
 </body>
 </html>
