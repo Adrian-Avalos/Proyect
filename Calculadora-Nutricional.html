@@ -22,7 +22,86 @@
     <h2 class="text-center mb-4">🍽️ Calculadora Nutricional Completa</h2>
 
     <!-- FILTROS -->
-    <!-- (el resto del contenido permanece igual y funcional) -->
+      <h2 class="text-center mb-4">🍽️ Calculadora Nutricional Completa</h2>
+
+    <!-- FILTROS -->
+    <div class="row g-2 mb-3">
+      <div class="col-md-4">
+        <select id="categoria" class="form-select" onchange="cargarAlimentos()">
+          <option value="">Seleccionar categoría</option>
+          <option value="LÁCTEOS">LÁCTEOS</option>
+          <option value="HUEVOS">HUEVOS</option>
+          <option value="CARNE - AVES">CARNE - AVES</option>
+          <option value="CARNE - VACUNA">CARNE - VACUNA</option>
+          <option value="CARNE - PESCADO">CARNE - PESCADO</option>
+          <option value="VEGETALES A">VEGETALES A</option>
+          <option value="VEGETALES B">VEGETALES B</option>
+          <option value="VEGETALES C">VEGETALES C</option>
+          <option value="FRUTAS A">FRUTAS A</option>
+          <option value="FRUTAS B">FRUTAS B</option>
+          <option value="FRUTAS C">FRUTAS C</option>
+          <option value="FRUTOS SECOS">FRUTOS SECOS</option>
+          <option value="CEREALES">CEREALES</option>
+          <option value="PANIFICADOS">PANIFICADOS</option>
+          <option value="DULCES">DULCES</option>
+          <option value="GRASAS">GRASAS</option>
+        <option value="OTROS">OTROS</option>
+        </select>
+      </div>
+      <div class="col-md-8">
+        <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento..." oninput="filtrarAlimentos()" />
+      </div>
+    </div>
+
+    <!-- SELECCIÓN Y CARGA -->
+    <div class="row g-2 align-items-center mb-3">
+      <div class="col-md-5">
+        <select id="alimento-select" class="form-select">
+          <option value="">Seleccioná un alimento</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input type="number" id="gramos" class="form-control" placeholder="Cantidad" />
+        <small id="unidad-info" class="text-muted ms-1"></small>
+      </div>
+      <div class="col-md-4">
+        <button onclick="agregarAlimento()" class="btn btn-primary w-100">➕ Agregar alimento</button>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive mb-3">
+      <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Alimento</th>
+            <th>Cantidad</th>
+            <th>Calorías</th>
+            <th>HC (g)</th>
+            <th>Prot. (g)</th>
+            <th>Grasa (g)</th>
+            <th>Na (mg)</th>
+            <th>K (mg)</th>
+            <th>P (mg)</th>
+            <th>Ca (mg)</th>
+            <th>Fe (mg)</th>
+            <th>Colest (mg)</th>
+            <th>Purinas (mg)</th>
+            <th>Fibra (g)</th>
+            <th>Agua (g)</th>
+            <th>A.Fólic (µg)</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-alimentos"></tbody>
+      </table>
+    </div>
+
+    <!-- TOTALES -->
+    <div id="totales" class="text-center fw-bold fs-5">
+      Totales: 0 cal | 0g HC | 0g Prot | 0g Grasas | 0mg Na | 0mg K | 0mg P | 0mg Ca | 0mg Fe | 0mg Colest | 0mg Purinas | 0g Fibra | 0g Agua | 0µg A.Fólic
+    </div>
+  </div>
 
     <!-- GRÁFICO CIRCULAR -->
     <div class="text-center">
