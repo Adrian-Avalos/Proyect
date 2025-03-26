@@ -1,4 +1,28 @@
-const urlsToCache = [
-  "index.html",
-  "menu.html",
-];
+{
+  "name": "Nutrición App",
+  "short_name": "Nutrición",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#28a745",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "imagenes/icono.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "imagenes/icono.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "imagenes/icono.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
