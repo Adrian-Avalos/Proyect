@@ -15,7 +15,7 @@
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Registrar el service worker -->
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -94,12 +94,73 @@
     .dot.active {
       background-color: #28a745;
     }
+
+    /* LOGIN FULLSCREEN */
+    #modalLogin {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 9999;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #modalLogin .form-control {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+    }
+
+    #modalLogin input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    #modalLogin h4 {
+      margin-bottom: 30px;
+    }
+
+    .btn-green {
+      background-color: #28a745;
+      color: #fff;
+      border-radius: 30px;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      width: 100%;
+    }
+
+    .cerrar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .ver-pass {
+      position: absolute;
+      right: 15px;
+      top: 9px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .input-group {
+      position: relative;
+    }
   </style>
 </head>
 <body>
 
+  <!-- SLIDES -->
   <div id="slidesContainer">
-    <!-- Slide 1 -->
     <div class="slide slide1">
       <div>
         <h2>Conoce qué comes</h2>
@@ -114,8 +175,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Slide 2 -->
     <div class="slide slide2">
       <div>
         <h2>Vive de forma saludable</h2>
@@ -130,12 +189,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Slide 3 -->
     <div class="slide slide3">
       <div>
         <h2>Tu nutrición, en tus manos</h2>
-        <p>Una herramienta práctica, clara y fácil de usar para alcanzar tus metas de salud.</p>
+        <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
         <div class="dots">
           <div class="dot"></div>
           <div class="dot"></div>
@@ -148,26 +205,28 @@
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="modalLogin" style="display: none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
-    <div class="card p-4 shadow" style="max-width: 350px; margin: auto;">
-      <h4 class="text-center mb-3">Inicio de Sesión</h4>
-      <form onsubmit="return validarLogin(event)">
-        <div class="form-group">
-          <label>Usuario</label>
-          <input type="text" class="form-control" id="email" placeholder="ADMINISTRADOR" value="ADMINISTRADOR">
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" class="form-control" id="password" placeholder="123">
-        </div>
-        <button type="submit" class="btn btn-success btn-block">Entrar</button>
-        <button type="button" class="btn btn-link btn-block" onclick="cerrarModal()">Cancelar</button>
-      </form>
-    </div>
+  <!-- LOGIN FULLSCREEN -->
+  <div id="modalLogin">
+    <div class="cerrar" onclick="cerrarModal()">✕</div>
+    <h4>Inicia sesión</h4>
+    <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="text" class="form-control" id="email" placeholder="ADMINISTRADOR" value="ADMINISTRADOR">
+      </div>
+      <div class="form-group input-group">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" id="password" placeholder="123">
+        <span class="ver-pass" onclick="togglePassword()">👁️</span>
+      </div>
+      <button type="submit" class="btn-green">Inicia sesión</button>
+      <div class="text-center mt-3">
+        <small>¿Se te ha olvidado tu contraseña?</small>
+      </div>
+    </form>
   </div>
 
-  <!-- Scripts -->
+  <!-- SCRIPT -->
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
@@ -197,18 +256,22 @@
       document.getElementById('modalLogin').style.display = 'none';
     }
 
+    function togglePassword() {
+      const input = document.getElementById('password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
     function validarLogin(event) {
       event.preventDefault();
       const user = document.getElementById("email").value.trim().toUpperCase();
       const pass = document.getElementById("password").value.trim();
 
       if (user === "ADMINISTRADOR" && pass === "123") {
-        location.href = "agregar-alimento.html";
+        location.href = "menu.html";
       } else {
         alert("Usuario o contraseña incorrectos");
       }
     }
   </script>
-
 </body>
 </html>
