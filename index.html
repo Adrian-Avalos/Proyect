@@ -95,12 +95,11 @@
       background-color: #28a745;
     }
 
-    /* LOGIN FULLSCREEN */
+    /* LOGIN FULLSCREEN con animación */
     #modalLogin {
-      display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 9999;
       color: #fff;
       display: flex;
@@ -108,17 +107,25 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    #modalLogin.mostrar {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     #modalLogin .form-control {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border: none;
       border-radius: 10px;
       color: #fff;
     }
 
     #modalLogin input::placeholder {
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
     }
 
     #modalLogin h4 {
@@ -175,6 +182,7 @@
         </div>
       </div>
     </div>
+
     <div class="slide slide2">
       <div>
         <h2>Vive de forma saludable</h2>
@@ -189,6 +197,7 @@
         </div>
       </div>
     </div>
+
     <div class="slide slide3">
       <div>
         <h2>Tu nutrición, en tus manos</h2>
@@ -205,7 +214,7 @@
     </div>
   </div>
 
-  <!-- LOGIN FULLSCREEN -->
+  <!-- LOGIN -->
   <div id="modalLogin">
     <div class="cerrar" onclick="cerrarModal()">✕</div>
     <h4>Inicia sesión</h4>
@@ -216,7 +225,7 @@
       </div>
       <div class="form-group input-group">
         <label>Contraseña</label>
-        <input type="password" class="form-control" id="password" placeholder="123">
+        <input type="password" class="form-control" id="password" placeholder="password">
         <span class="ver-pass" onclick="togglePassword()">👁️</span>
       </div>
       <button type="submit" class="btn-green">Inicia sesión</button>
@@ -226,7 +235,7 @@
     </form>
   </div>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPTS -->
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
@@ -249,11 +258,11 @@
     showSlide(0);
 
     function irLogin() {
-      document.getElementById('modalLogin').style.display = 'flex';
+      document.getElementById('modalLogin').classList.add('mostrar');
     }
 
     function cerrarModal() {
-      document.getElementById('modalLogin').style.display = 'none';
+      document.getElementById('modalLogin').classList.remove('mostrar');
     }
 
     function togglePassword() {
@@ -266,12 +275,13 @@
       const user = document.getElementById("email").value.trim().toUpperCase();
       const pass = document.getElementById("password").value.trim();
 
-      if (user === "ADMINISTRADOR" && pass === "123") {
-        location.href = "menu.html";
+      if (user === "ADMINISTRADOR" && pass === "123**321") {
+        location.href = "agregar-alimento.html";
       } else {
         alert("Usuario o contraseña incorrectos");
       }
     }
   </script>
+
 </body>
 </html>
