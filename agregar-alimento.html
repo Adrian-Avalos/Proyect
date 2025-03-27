@@ -38,37 +38,32 @@
     </div>
   </div>
 
-<div id="imagen-ayuda" class="text-center my-4">
-  <img src="/mnt/data/image.png" alt="Instrucciones" class="img-fluid rounded">
-</div>
-
-  
   <!-- FORM SELECCIÓN -->
   <div class="form-section">
     <div class="row g-2">
       <div class="col-md-4">
-      <label class="form-label">Categoría</label>
-      <select id="categoria" class="form-select" onchange="cargarAlimentos(); document.getElementById('imagen-ayuda').style.display='block';">
-        <option value="">Seleccioná una categoría</option>
-        <option value="LÁCTEOS">LÁCTEOS</option>
-        <option value="HUEVOS">HUEVOS</option>
-        <option value="CARNE - AVES">CARNE - AVES</option>
-        <option value="CARNE - VACUNA">CARNE - VACUNA</option>
-        <option value="CARNE - PESCADO">CARNE - PESCADO</option>
-        <option value="VEGETALES A">VEGETALES A</option>
-        <option value="VEGETALES B">VEGETALES B</option>
-        <option value="VEGETALES C">VEGETALES C</option>
-        <option value="FRUTAS A">FRUTAS A</option>
-        <option value="FRUTAS B">FRUTAS B</option>
-        <option value="FRUTAS C">FRUTAS C</option>
-        <option value="FRUTOS SECOS">FRUTOS SECOS</option>
-        <option value="CEREALES">CEREALES</option>
-        <option value="PANIFICADOS">PANIFICADOS</option>
-        <option value="DULCES">DULCES</option>
-        <option value="GRASAS">GRASAS</option>
-        <option value="OTROS">OTROS</option>
-      </select>
-    </div>
+        <label class="form-label">Categoría</label>
+        <select id="categoria" class="form-select" onchange="cargarAlimentos()">
+          <option value="">Seleccioná una categoría</option>
+          <option value="LÁCTEOS">LÁCTEOS</option>
+          <option value="HUEVOS">HUEVOS</option>
+          <option value="CARNE - AVES">CARNE - AVES</option>
+          <option value="CARNE - VACUNA">CARNE - VACUNA</option>
+          <option value="CARNE - PESCADO">CARNE - PESCADO</option>
+          <option value="VEGETALES A">VEGETALES A</option>
+          <option value="VEGETALES B">VEGETALES B</option>
+          <option value="VEGETALES C">VEGETALES C</option>
+          <option value="FRUTAS A">FRUTAS A</option>
+          <option value="FRUTAS B">FRUTAS B</option>
+          <option value="FRUTAS C">FRUTAS C</option>
+          <option value="FRUTOS SECOS">FRUTOS SECOS</option>
+          <option value="CEREALES">CEREALES</option>
+          <option value="PANIFICADOS">PANIFICADOS</option>
+          <option value="DULCES">DULCES</option>
+          <option value="GRASAS">GRASAS</option>
+          <option value="OTROS">OTROS</option>
+        </select>
+      </div>
       <div class="col-md-8">
         <label class="form-label">Buscar alimento</label>
         <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento..." oninput="filtrarAlimentos()" />
@@ -92,7 +87,7 @@
     </div>
 
     <!-- DETALLE EXPANDIDO AUTOMÁTICAMENTE -->
-    <div id="detalle-alimento" class="row g-2 mt-3"></div>
+    <div id="detalle-alimento" class="row g-2 mt-3" style="display: none;"></div>
   </div>
 
   <div class="table-responsive mt-4">
@@ -133,21 +128,23 @@
   }
 
   function mostrarDatosAlimento() {
-    const categoria = document.getElementById('categoria').value;
-    const nombre = document.getElementById('alimento-select').value;
-    const contenedor = document.getElementById('detalle-alimento');
-    contenedor.innerHTML = '';
-    if (!categoria || !nombre) return;
-    const a = baseDatos[categoria][nombre];
-    Object.entries(a).forEach(([k, v]) => {
-      const col = document.createElement('div');
-      col.className = 'col-md-3';
-      col.innerHTML = `<label class="form-label">${k.toUpperCase()}</label><input class="form-control" value="${v}" disabled>`;
-      contenedor.appendChild(col);
-    });
+  const categoria = document.getElementById('categoria').value;
+  const nombre = document.getElementById('alimento-select').value;
+  const contenedor = document.getElementById('detalle-alimento');
+  contenedor.innerHTML = '';
+  if (!categoria || !nombre) {
+    contenedor.style.display = 'none';
+    return;
   }
-
-
+  const a = baseDatos[categoria][nombre];
+  Object.entries(a).forEach(([k, v]) => {
+    const col = document.createElement('div');
+    col.className = 'col-md-3';
+    col.innerHTML = `<label class="form-label">${k.toUpperCase()}</label><input class="form-control" value="${v}" disabled>`;
+    contenedor.appendChild(col);
+  });
+  contenedor.style.display = 'flex';
+}
 
 function agregarAlimento() {
   const categoria = document.getElementById('categoria').value;
@@ -158,9 +155,8 @@ function agregarAlimento() {
   const factor = cantidad / a.medida;
   alimentosSeleccionados.push({ nombre, cantidad, unidad: a.unidad, ...a, factor });
   actualizarTabla();
-  document.getElementById('imagen-ayuda').style.display = 'none';
+  document.getElementById('detalle-alimento').style.display = 'none';
 }
-
 
   function eliminarAlimento(index) {
     alimentosSeleccionados.splice(index, 1);
