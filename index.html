@@ -28,105 +28,187 @@
 
   <style>
     body {
-      height: 100vh;
       margin: 0;
-      background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.95)), url('imagenes/fondo-comida.gif');
+      background-color: #fff;
+      font-family: 'Helvetica Neue', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide {
+      height: 100vh;
+      width: 100vw;
       background-size: cover;
       background-position: center;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .floating-img {
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      color: #fff;
       position: absolute;
-      width: 60px;
-      opacity: 0.4;
-      animation: float 8s ease-in-out infinite;
-    }
-    .img1 { top: 10%; left: 5%; animation-delay: 0s; }
-    .img2 { top: 20%; right: 10%; animation-delay: 2s; }
-    .img3 { bottom: 15%; left: 20%; animation-delay: 4s; }
-    .img4 { bottom: 10%; right: 15%; animation-delay: 6s; }
-    .img5 { top: 30%; left: 40%; animation-delay: 1s; }
-    .img6 { bottom: 25%; right: 30%; animation-delay: 3s; }
-    .img7 { top: 5%; right: 40%; animation-delay: 5s; }
-    .img8 { bottom: 5%; left: 10%; animation-delay: 7s; }
-
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-30px); }
-      100% { transform: translateY(0); }
+      transition: transform 0.5s ease-in-out;
     }
 
-    .titulo-animado {
-      animation: fadeInScale 2s ease-out;
+    .slide h2 {
+      font-size: 28px;
+      font-weight: bold;
     }
 
-    @keyframes fadeInScale {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
+    .slide p {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .slide-buttons {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-slide {
+      margin: 0 10px;
+      padding: 12px 24px;
+      font-weight: bold;
+      border-radius: 30px;
+      border: none;
+    }
+
+    .slide1 { background-image: url('imagenes/slide1.jpg'); z-index: 3; }
+    .slide2 { background-image: url('imagenes/slide2.jpg'); z-index: 2; }
+    .slide3 { background-image: url('imagenes/slide3.jpg'); z-index: 1; }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      border-radius: 50%;
+      background-color: #ccc;
+      transition: background-color 0.3s;
+    }
+
+    .dot.active {
+      background-color: #28a745;
     }
   </style>
 </head>
 <body>
 
-  <!-- Imágenes decorativas -->
-  <img src="imagenes/comida1.png" class="floating-img img1" alt="Comida 1">
-  <img src="imagenes/comida2.png" class="floating-img img2" alt="Comida 2">
-  <img src="imagenes/comida3.png" class="floating-img img3" alt="Comida 3">
-  <img src="imagenes/comida4.png" class="floating-img img4" alt="Comida 4">
-  <img src="imagenes/comida1.png" class="floating-img img5" alt="Comida 5">
-  <img src="imagenes/comida2.png" class="floating-img img6" alt="Comida 6">
-  <img src="imagenes/comida3.png" class="floating-img img7" alt="Comida 7">
-  <img src="imagenes/comida4.png" class="floating-img img8" alt="Comida 8">
+  <div id="slidesContainer">
+    <!-- Slide 1 -->
+    <div class="slide slide1">
+      <div>
+        <h2>Conoce qué comes</h2>
+        <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
 
-  <!-- Formulario de inicio de sesión -->
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-md-6 col-lg-5">
-        <div class="card shadow border-0">
-          <div class="card-body">
-            <h3 class="card-title text-center text-success mb-4 titulo-animado">Inicio de Sesión Nutrición</h3>
-            <form onsubmit="return validarLogin(event)">
-              <div class="form-group">
-                <label for="email">Usuario</label>
-                <input type="text" class="form-control" id="email" placeholder="ADMINISTRADOR" value="ADMINISTRADOR">
-              </div>
-              <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" class="form-control" id="password" placeholder="Contraseña">
-              </div>
-              <button type="submit" class="btn btn-success btn-block">Iniciar sesión</button>
-            </form>
-          </div>
+    <!-- Slide 2 -->
+    <div class="slide slide2">
+      <div>
+        <h2>Vive de forma saludable</h2>
+        <p>Planifica tu alimentación y siéntete genial día a día.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide slide3">
+      <div>
+        <h2>Tu nutrición, en tus manos</h2>
+        <p>Una herramienta práctica, clara y fácil de usar para alcanzar tus metas de salud.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot active"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Validación JS -->
+  <!-- Login Modal -->
+  <div id="modalLogin" style="display: none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); z-index:999; align-items:center; justify-content:center;">
+    <div class="card p-4 shadow" style="max-width: 350px; margin: auto;">
+      <h4 class="text-center mb-3">Inicio de Sesión</h4>
+      <form onsubmit="return validarLogin(event)">
+        <div class="form-group">
+          <label>Usuario</label>
+          <input type="text" class="form-control" id="email" placeholder="ADMINISTRADOR" value="ADMINISTRADOR">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" class="form-control" id="password" placeholder="123">
+        </div>
+        <button type="submit" class="btn btn-success btn-block">Entrar</button>
+        <button type="button" class="btn btn-link btn-block" onclick="cerrarModal()">Cancelar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.style.transform = `translateX(${(i - index) * 100}%)`;
+        dots[i].classList.toggle('active', i === index);
+      });
+      currentSlide = index;
+    }
+
+    function autoSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    setInterval(autoSlide, 6000);
+    showSlide(0);
+
+    function irLogin() {
+      document.getElementById('modalLogin').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalLogin').style.display = 'none';
+    }
+
     function validarLogin(event) {
       event.preventDefault();
       const user = document.getElementById("email").value.trim().toUpperCase();
       const pass = document.getElementById("password").value.trim();
-      const usuarioValido = "ADMINISTRADOR";
-      const contrasenaValida = "123";
 
-      if (user === usuarioValido && pass === contrasenaValida) {
-        location.assign("menu.html"); // evita salir del modo app
+      if (user === "ADMINISTRADOR" && pass === "123") {
+        location.href = "agregar-alimento.html";
       } else {
         alert("Usuario o contraseña incorrectos");
       }
-      return false;
     }
   </script>
-
-  <!-- JS Bootstrap -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
