@@ -38,8 +38,8 @@
     </div>
   </div>
 
-  <!-- FORM SELECCIÓN -->
-  <div class="form-section">
+  <!-- BLOQUE CARGA ALIMENTOS AL PRESIONAR + -->
+  <div id="formulario-carga" class="form-section" style="display: none;">
     <div class="row g-2">
       <div class="col-md-4">
         <label class="form-label">Categoría</label>
@@ -65,29 +65,22 @@
         </select>
       </div>
       <div class="col-md-8">
-        <label class="form-label">Buscar alimento</label>
-        <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento..." oninput="filtrarAlimentos()" />
-      </div>
-    </div>
-    <div class="row g-2 align-items-end mt-3">
-      <div class="col-md-5">
         <label class="form-label">Alimento</label>
         <select id="alimento-select" class="form-select" onchange="mostrarDatosAlimento()">
           <option value="">Seleccioná un alimento</option>
         </select>
       </div>
+    </div>
+    <div id="detalle-alimento" class="row g-2 mt-3" style="display:none"></div>
+    <div class="row g-2 align-items-end mt-2">
       <div class="col-md-3">
         <label class="form-label">Cantidad</label>
         <input type="number" id="gramos" class="form-control" placeholder="Cantidad" />
-        <small id="unidad-info" class="text-muted ms-1"></small>
       </div>
-      <div class="col-md-4">
-        <button onclick="agregarAlimento()" class="btn btn-primary w-100">➕ Agregar alimento</button>
+      <div class="col-md-9">
+        <button onclick="agregarAlimento()" class="btn btn-primary w-100 mt-4">➕ Agregar alimento</button>
       </div>
     </div>
-
-    <!-- DETALLE EXPANDIDO AUTOMÁTICAMENTE -->
-    <div id="detalle-alimento" class="row g-2 mt-3" style="display: none;"></div>
   </div>
 
   <div class="table-responsive mt-4">
@@ -105,37 +98,38 @@
   <canvas id="graficoCircular" width="300" height="300" class="mx-auto d-block mt-4"></canvas>
 </div>
 
+<!-- BOTÓN + FLOTANTE -->
+<button onclick="mostrarFormularioCargar()" class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle" style="width: 60px; height: 60px; font-size: 1.5rem;">+</button>
+
 <script src="datos/datos.js"></script>
 <script>
-  let alimentosSeleccionados = [], grafico = null;
-  const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
+let alimentosSeleccionados = [], grafico = null;
+const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
-  function cargarAlimentos() {
-    const categoria = document.getElementById('categoria').value;
-    const select = document.getElementById('alimento-select');
-    select.innerHTML = '<option value="">Seleccioná un alimento</option>';
-    if (!categoria || !baseDatos[categoria]) return;
-    Object.keys(baseDatos[categoria]).forEach(nombre => {
-      const opt = document.createElement('option');
-      opt.value = nombre;
-      opt.textContent = nombre;
-      select.appendChild(opt);
-    });
-  }
+function mostrarFormularioCargar() {
+  const f = document.getElementById('formulario-carga');
+  f.style.display = (f.style.display === 'none') ? 'block' : 'none';
+}
 
-  function filtrarAlimentos() {
-    cargarAlimentos();
-  }
+function cargarAlimentos() {
+  const categoria = document.getElementById('categoria').value;
+  const select = document.getElementById('alimento-select');
+  select.innerHTML = '<option value="">Seleccioná un alimento</option>';
+  if (!categoria || !baseDatos[categoria]) return;
+  Object.keys(baseDatos[categoria]).forEach(nombre => {
+    const opt = document.createElement('option');
+    opt.value = nombre;
+    opt.textContent = nombre;
+    select.appendChild(opt);
+  });
+}
 
-  function mostrarDatosAlimento() {
+function mostrarDatosAlimento() {
   const categoria = document.getElementById('categoria').value;
   const nombre = document.getElementById('alimento-select').value;
   const contenedor = document.getElementById('detalle-alimento');
   contenedor.innerHTML = '';
-  if (!categoria || !nombre) {
-    contenedor.style.display = 'none';
-    return;
-  }
+  if (!categoria || !nombre) return contenedor.style.display = 'none';
   const a = baseDatos[categoria][nombre];
   Object.entries(a).forEach(([k, v]) => {
     const col = document.createElement('div');
@@ -155,70 +149,70 @@ function agregarAlimento() {
   const factor = cantidad / a.medida;
   alimentosSeleccionados.push({ nombre, cantidad, unidad: a.unidad, ...a, factor });
   actualizarTabla();
-  document.getElementById('detalle-alimento').style.display = 'none';
+  document.getElementById('formulario-carga').style.display = 'none';
 }
 
-  function eliminarAlimento(index) {
-    alimentosSeleccionados.splice(index, 1);
+function eliminarAlimento(index) {
+  alimentosSeleccionados.splice(index, 1);
+  actualizarTabla();
+}
+
+function modificarCantidad(index) {
+  const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
+  if (nueva && !isNaN(nueva) && nueva > 0) {
+    alimentosSeleccionados[index].cantidad = parseFloat(nueva);
+    alimentosSeleccionados[index].factor = nueva / alimentosSeleccionados[index].medida;
     actualizarTabla();
   }
+}
 
-  function modificarCantidad(index) {
-    const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
-    if (nueva && !isNaN(nueva) && nueva > 0) {
-      alimentosSeleccionados[index].cantidad = parseFloat(nueva);
-      alimentosSeleccionados[index].factor = nueva / alimentosSeleccionados[index].medida;
-      actualizarTabla();
+function actualizarTabla() {
+  const tabla = document.getElementById('tabla-alimentos');
+  tabla.innerHTML = '';
+  alimentosSeleccionados.forEach((a, i) => {
+    tabla.innerHTML += `<tr>
+      <td>${a.nombre}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.calorias*a.factor).toFixed(1)}</td><td>${(a.hc*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.grasas*a.factor).toFixed(1)}</td>
+      <td>${(a.na*a.factor).toFixed(1)}</td><td>${(a.k*a.factor).toFixed(1)}</td><td>${(a.p*a.factor).toFixed(1)}</td><td>${(a.ca*a.factor).toFixed(1)}</td><td>${(a.fe*a.factor).toFixed(1)}</td><td>${(a.colest*a.factor).toFixed(1)}</td>
+      <td>${(a.purinas*a.factor).toFixed(1)}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.afolic*a.factor).toFixed(1)}</td>
+      <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
+    </tr>`;
+  });
+  calcularTotales();
+}
+
+function calcularTotales() {
+  const t = { calorias:0, hc:0, proteinas:0, grasas:0, na:0, k:0, p:0, ca:0, fe:0, colest:0, purinas:0, fibra:0, agua:0, afolic:0 };
+  alimentosSeleccionados.forEach(a => {
+    for (let k in t) t[k] += (a[k] || 0) * a.factor;
+  });
+  document.getElementById('totales').textContent =
+    `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas | ` +
+    `${t.na.toFixed(1)}mg Na | ${t.k.toFixed(1)}mg K | ${t.p.toFixed(1)}mg P | ${t.ca.toFixed(1)}mg Ca | ${t.fe.toFixed(1)}mg Fe | ` +
+    `${t.colest.toFixed(1)}mg Colest | ${t.purinas.toFixed(1)}mg Purinas | ${t.fibra.toFixed(1)}g Fibra | ${t.agua.toFixed(1)}g Agua | ${t.afolic.toFixed(1)}µg A.Fólic`;
+  actualizarGrafico(t);
+}
+
+function actualizarGrafico(t) {
+  const ctx = document.getElementById('graficoCircular').getContext('2d');
+  if (grafico) grafico.destroy();
+  grafico = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
+      datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
+    },
+    options: {
+      plugins: { legend: { position: 'bottom' } }
     }
-  }
-
-  function actualizarTabla() {
-    const tabla = document.getElementById('tabla-alimentos');
-    tabla.innerHTML = '';
-    alimentosSeleccionados.forEach((a, i) => {
-      tabla.innerHTML += `<tr>
-        <td>${a.nombre}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.calorias*a.factor).toFixed(1)}</td><td>${(a.hc*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.grasas*a.factor).toFixed(1)}</td>
-        <td>${(a.na*a.factor).toFixed(1)}</td><td>${(a.k*a.factor).toFixed(1)}</td><td>${(a.p*a.factor).toFixed(1)}</td><td>${(a.ca*a.factor).toFixed(1)}</td><td>${(a.fe*a.factor).toFixed(1)}</td><td>${(a.colest*a.factor).toFixed(1)}</td>
-        <td>${(a.purinas*a.factor).toFixed(1)}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.afolic*a.factor).toFixed(1)}</td>
-        <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
-      </tr>`;
-    });
-    calcularTotales();
-  }
-
-  function calcularTotales() {
-    const t = { calorias:0, hc:0, proteinas:0, grasas:0, na:0, k:0, p:0, ca:0, fe:0, colest:0, purinas:0, fibra:0, agua:0, afolic:0 };
-    alimentosSeleccionados.forEach(a => {
-      for (let k in t) t[k] += (a[k] || 0) * a.factor;
-    });
-    document.getElementById('totales').textContent =
-      `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas | ` +
-      `${t.na.toFixed(1)}mg Na | ${t.k.toFixed(1)}mg K | ${t.p.toFixed(1)}mg P | ${t.ca.toFixed(1)}mg Ca | ${t.fe.toFixed(1)}mg Fe | ` +
-      `${t.colest.toFixed(1)}mg Colest | ${t.purinas.toFixed(1)}mg Purinas | ${t.fibra.toFixed(1)}g Fibra | ${t.agua.toFixed(1)}g Agua | ${t.afolic.toFixed(1)}µg A.Fólic`;
-    actualizarGrafico(t);
-  }
-
-  function actualizarGrafico(t) {
-    const ctx = document.getElementById('graficoCircular').getContext('2d');
-    if (grafico) grafico.destroy();
-    grafico = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
-        datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
-      },
-      options: {
-        plugins: { legend: { position: 'bottom' } }
-      }
-    });
-    document.getElementById('pctCarbs').textContent = Math.round(t.hc / macrosObjetivo.hc * 100) + '%';
-    document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / macrosObjetivo.proteinas * 100) + '%';
-    document.getElementById('pctGrasas').textContent = Math.round(t.grasas / macrosObjetivo.grasas * 100) + '%';
-    document.getElementById('carbsRestantes').textContent = (macrosObjetivo.hc - t.hc).toFixed(1) + 'g restantes';
-    document.getElementById('proteinasRestantes').textContent = (macrosObjetivo.proteinas - t.proteinas).toFixed(1) + 'g restantes';
-    document.getElementById('grasasRestantes').textContent = (macrosObjetivo.grasas - t.grasas).toFixed(1) + 'g restantes';
-    document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
-  }
+  });
+  document.getElementById('pctCarbs').textContent = Math.round(t.hc / macrosObjetivo.hc * 100) + '%';
+  document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / macrosObjetivo.proteinas * 100) + '%';
+  document.getElementById('pctGrasas').textContent = Math.round(t.grasas / macrosObjetivo.grasas * 100) + '%';
+  document.getElementById('carbsRestantes').textContent = (macrosObjetivo.hc - t.hc).toFixed(1) + 'g restantes';
+  document.getElementById('proteinasRestantes').textContent = (macrosObjetivo.proteinas - t.proteinas).toFixed(1) + 'g restantes';
+  document.getElementById('grasasRestantes').textContent = (macrosObjetivo.grasas - t.grasas).toFixed(1) + 'g restantes';
+  document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
+}
 </script>
 </body>
 </html>
