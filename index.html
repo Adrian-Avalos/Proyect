@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
 
+  <!-- Manifest e íconos PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="imagenes/icono.ico">
   <link rel="icon" type="image/png" href="imagenes/icono.png">
@@ -14,24 +15,25 @@
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
+
   <style>
-    /* Estilos generales */
     body {
       margin: 0;
       background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
       overflow: hidden;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
     }
 
-    h2, p, label, small, button {
-      user-select: none;
-    }
-
-    /* Slides */
     .slide {
       height: 100vh;
       width: 100vw;
@@ -93,15 +95,7 @@
       background-color: #28a745;
     }
 
-    /* Botón fijo */
-    #botonFijoLogin {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-    }
-
-    /* LOGIN FULLSCREEN */
+    /* LOGIN FULLSCREEN con animación */
     #modalLogin {
       position: fixed;
       inset: 0;
@@ -172,11 +166,6 @@
 </head>
 <body>
 
-  <!-- Botón fijo de login -->
-  <div id="botonFijoLogin">
-    <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
-  </div>
-
   <!-- SLIDES -->
   <div id="slidesContainer">
     <div class="slide slide1">
@@ -187,6 +176,9 @@
           <div class="dot active"></div>
           <div class="dot"></div>
           <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
       </div>
     </div>
@@ -200,6 +192,9 @@
           <div class="dot active"></div>
           <div class="dot"></div>
         </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
       </div>
     </div>
 
@@ -211,6 +206,9 @@
           <div class="dot"></div>
           <div class="dot"></div>
           <div class="dot active"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
       </div>
     </div>
@@ -237,7 +235,7 @@
     </form>
   </div>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPTS -->
   <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
@@ -284,5 +282,6 @@
       }
     }
   </script>
+
 </body>
 </html>
