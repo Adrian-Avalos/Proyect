@@ -1,6 +1,6 @@
 {
   "name": "Nutrición App",
-  "short_name": "Nutrición",
+  "short_name": "Nutrición APP",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
