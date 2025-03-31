@@ -7,11 +7,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { background-color: #000; color: #fff; padding-bottom: 3rem; }
+    body { background-color: #000; color: #fff; padding-bottom: 5rem; }
     .card { background-color: #111; border-radius: 1rem; padding: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.3); color: #fff; }
     .chart-container { max-width: 500px; margin: 2rem auto; }
     label, input, .form-label, .form-control { color: #fff; }
     .form-control { background-color: #222; border: 1px solid #444; }
+    .volver-btn { position: fixed; bottom: 20px; left: 20px; z-index: 1050; }
   </style>
 </head>
 <body>
@@ -30,6 +31,7 @@
           <button onclick="calcularIMC()" class="btn btn-info w-100">Calcular IMC</button>
 
           <div id="resultado" class="text-center mt-4 fs-5 fw-bold text-white"></div>
+          <div id="peso-ideal" class="text-center mt-2 text-secondary"></div>
         </div>
       </div>
     </div>
@@ -39,6 +41,8 @@
     </div>
   </div>
 
+  <a href="Calculadora-Nutricional.html" class="btn btn-light volver-btn">← Volver</a>
+
   <script>
     let grafico = null;
 
@@ -46,9 +50,11 @@
       const peso = parseFloat(document.getElementById('peso').value);
       const alturaCm = parseFloat(document.getElementById('altura').value);
       const resultado = document.getElementById('resultado');
+      const infoIdeal = document.getElementById('peso-ideal');
 
       if (!peso || !alturaCm || peso <= 0 || alturaCm <= 0) {
         resultado.textContent = 'Por favor, ingresá peso y altura válidos.';
+        infoIdeal.textContent = '';
         return;
       }
 
@@ -62,6 +68,25 @@
       else clasificacion = "Obesidad";
 
       resultado.innerHTML = `Tu IMC es <strong>${imc.toFixed(2)}</strong> (${clasificacion})`;
+
+      const pesoIdealMin = 18.5 * (alturaM * alturaM);
+      const pesoIdealMax = 24.9 * (alturaM * alturaM);
+
+      let diferencia = 0;
+      let mensajeExtra = "";
+
+      if (peso < pesoIdealMin) {
+        diferencia = (pesoIdealMin - peso).toFixed(1);
+        mensajeExtra = `Deberías aumentar al menos <strong>${diferencia} kg</strong> para estar en el rango saludable.`;
+      } else if (peso > pesoIdealMax) {
+        diferencia = (peso - pesoIdealMax).toFixed(1);
+        mensajeExtra = `Deberías bajar al menos <strong>${diferencia} kg</strong> para entrar en el rango saludable.`;
+      } else {
+        mensajeExtra = "Estás dentro de tu peso ideal. ¡Bien hecho!";
+      }
+
+      infoIdeal.innerHTML = `Tu peso ideal está entre <strong>${pesoIdealMin.toFixed(1)} kg</strong> y <strong>${pesoIdealMax.toFixed(1)} kg</strong>.<br>${mensajeExtra}`;
+
       mostrarGrafico(imc);
     }
 
@@ -74,24 +99,19 @@
         data: {
           labels: ['Bajo peso', 'Normal', 'Sobrepeso', 'Obesidad'],
           datasets: [{
-            label: 'IMC',
+            label: 'IMC Categorías',
             data: [18.4, 24.9, 29.9, 35],
             backgroundColor: ['#0dcaf0', '#198754', '#ffc107', '#dc3545']
           }, {
             label: 'Tu IMC',
-            data: [null, null, null, null],
+            data: [valor, valor, valor, valor],
             type: 'line',
-            borderColor: '#fff',
+            borderColor: '#ffffff',
+            backgroundColor: 'rgba(255,255,255,0.1)',
             borderWidth: 2,
-            pointRadius: 6,
-            pointBackgroundColor: '#fff',
-            data: Array(4).fill(null).map((_, i) => {
-              if (valor < 18.5 && i === 0) return valor;
-              if (valor >= 18.5 && valor < 25 && i === 1) return valor;
-              if (valor >= 25 && valor < 30 && i === 2) return valor;
-              if (valor >= 30 && i === 3) return valor;
-              return null;
-            })
+            pointRadius: 0,
+            pointHitRadius: 0,
+            fill: false
           }]
         },
         options: {
