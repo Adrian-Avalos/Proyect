@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <br>
   <title>App Nutricional</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -39,7 +38,7 @@
     </div>
   </div>
 
-  <!-- TABLA -->
+  <!-- Tabla de alimentos -->
   <div class="table-responsive mt-4">
     <table class="table table-striped table-bordered">
       <thead>
@@ -51,14 +50,17 @@
     </table>
   </div>
 
-  <div id="totales" class="text-center fw-bold fs-5"></div>
+  <div id="totales" class="text-center fw-bold fs-5 mt-3"></div>
   <canvas id="graficoCircular" width="300" height="300" class="mx-auto d-block mt-4"></canvas>
 </div>
 
-<!-- Botón flotante para abrir el modal -->
+<!-- Botón flotante principal -->
 <button onclick="abrirModal()" class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle" style="width: 60px; height: 60px; font-size: 1.5rem;">+</button>
 
-<!-- Modal -->
+<!-- Segundo botón flotante (IMC) -->
+<button onclick="abrirModalIMC()" class="btn btn-info position-fixed bottom-0 end-0 mb-5 me-4 rounded-circle" style="width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">🧮</button>
+
+<!-- Modal agregar alimento -->
 <div class="modal fade" id="modalAgregar" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content bg-dark text-white">
@@ -72,23 +74,7 @@
             <label class="form-label">Categoría</label>
             <select id="categoria" class="form-select" onchange="cargarAlimentos()">
               <option value="">Seleccioná una categoría</option>
-              <option value="LÁCTEOS">LÁCTEOS</option>
-              <option value="HUEVOS">HUEVOS</option>
-              <option value="CARNE - AVES">CARNE - AVES</option>
-              <option value="CARNE - VACUNA">CARNE - VACUNA</option>
-              <option value="CARNE - PESCADO">CARNE - PESCADO</option>
-              <option value="VEGETALES A">VEGETALES A</option>
-              <option value="VEGETALES B">VEGETALES B</option>
-              <option value="VEGETALES C">VEGETALES C</option>
-              <option value="FRUTAS A">FRUTAS A</option>
-              <option value="FRUTAS B">FRUTAS B</option>
-              <option value="FRUTAS C">FRUTAS C</option>
-              <option value="FRUTOS SECOS">FRUTOS SECOS</option>
-              <option value="CEREALES">CEREALES</option>
-              <option value="PANIFICADOS">PANIFICADOS</option>
-              <option value="DULCES">DULCES</option>
-              <option value="GRASAS">GRASAS</option>
-              <option value="OTROS">OTROS</option>
+              <!-- Agregá aquí tus categorías reales -->
             </select>
           </div>
           <div class="col-md-8">
@@ -115,14 +101,60 @@
   </div>
 </div>
 
+<!-- Modal IMC -->
+<div class="modal fade" id="modalIMC" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title">Calculadora de IMC</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label>Peso (kg)</label>
+        <input type="number" id="peso" class="form-control mb-3" placeholder="Ej: 70">
+        <label>Altura (cm)</label>
+        <input type="number" id="altura" class="form-control mb-3" placeholder="Ej: 170">
+        <button onclick="calcularIMC()" class="btn btn-info w-100">Calcular IMC</button>
+        <div id="resultado-imc" class="mt-3 text-center fw-bold fs-5"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="datos/datos.js"></script>
 <script>
+let baseDatos = {}; // ← Asegurate de tener este objeto cargado con tus alimentos
 let alimentosSeleccionados = [], grafico = null;
 const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
 function abrirModal() {
   new bootstrap.Modal(document.getElementById('modalAgregar')).show();
+}
+
+function abrirModalIMC() {
+  new bootstrap.Modal(document.getElementById('modalIMC')).show();
+}
+
+function calcularIMC() {
+  const peso = parseFloat(document.getElementById('peso').value);
+  const alturaCm = parseFloat(document.getElementById('altura').value);
+  const resultado = document.getElementById('resultado-imc');
+
+  if (!peso || !alturaCm || peso <= 0 || alturaCm <= 0) {
+    resultado.textContent = 'Por favor, ingresá peso y altura válidos.';
+    return;
+  }
+
+  const alturaM = alturaCm / 100;
+  const imc = peso / (alturaM * alturaM);
+  let clasificacion = "";
+
+  if (imc < 18.5) clasificacion = "Bajo peso";
+  else if (imc < 25) clasificacion = "Normal";
+  else if (imc < 30) clasificacion = "Sobrepeso";
+  else clasificacion = "Obesidad";
+
+  resultado.innerHTML = `Tu IMC es <strong>${imc.toFixed(2)}</strong> (${clasificacion})`;
 }
 
 function cargarAlimentos() {
@@ -138,9 +170,7 @@ function cargarAlimentos() {
   });
 }
 
-function filtrarAlimentos() {
-  cargarAlimentos();
-}
+function filtrarAlimentos() { cargarAlimentos(); }
 
 function mostrarDatosAlimento() {
   const categoria = document.getElementById('categoria').value;
