@@ -8,13 +8,15 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { background-color: #000; color: #fff; padding-bottom: 3rem; }
-    .card { background-color: #111; border-radius: 1rem; padding: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    .card { background-color: #111; border-radius: 1rem; padding: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.3); color: #fff; }
     .chart-container { max-width: 500px; margin: 2rem auto; }
+    label, input, .form-label, .form-control { color: #fff; }
+    .form-control { background-color: #222; border: 1px solid #444; }
   </style>
 </head>
 <body>
   <div class="container py-5">
-    <h1 class="text-center fw-bold">Calculadora de IMC</h1>
+    <h1 class="text-center fw-bold text-white">Calculadora de IMC</h1>
 
     <div class="row justify-content-center mt-4">
       <div class="col-md-6">
@@ -27,7 +29,7 @@
 
           <button onclick="calcularIMC()" class="btn btn-info w-100">Calcular IMC</button>
 
-          <div id="resultado" class="text-center mt-4 fs-5 fw-bold"></div>
+          <div id="resultado" class="text-center mt-4 fs-5 fw-bold text-white"></div>
         </div>
       </div>
     </div>
@@ -94,10 +96,15 @@
         },
         options: {
           scales: {
-            y: { beginAtZero: true }
+            y: { beginAtZero: true, ticks: { color: '#fff' } },
+            x: { ticks: { color: '#fff' } }
           },
           plugins: {
-            legend: { display: true }
+            legend: {
+              labels: {
+                color: '#fff'
+              }
+            }
           }
         }
       });
