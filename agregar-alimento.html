@@ -114,7 +114,20 @@
   </div>
 </div>
 
-
+<script>
+  const baseDatos = {
+    "LÁCTEOS": {
+      "Leche entera": {
+        medida: 100, unidad: "ml", calorias: 64, hc: 5, proteinas: 3.3, grasas: 3.5,
+        na: 44, k: 150, p: 95, ca: 120, fe: 0.1, colest: 14, purinas: 0, fibra: 0, agua: 88, afolic: 5
+      },
+      "Yogur natural": {
+        medida: 100, unidad: "g", calorias: 61, hc: 4.7, proteinas: 3.5, grasas: 3.3,
+        na: 40, k: 140, p: 110, ca: 120, fe: 0.1, colest: 13, purinas: 0, fibra: 0, agua: 85, afolic: 7
+      }
+    }
+  };
+</script>
   
 <!-- Segundo botón flotante (IMC) - más arriba para que no se encime -->
 <button onclick="abrirModalIMC()" class="btn btn-info position-fixed end-0 me-4 rounded-circle" style="bottom: 90px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">🧮</button>
