@@ -57,6 +57,65 @@
 <!-- Botón flotante principal -->
 <button onclick="abrirModal()" class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle" style="width: 60px; height: 60px; font-size: 1.5rem;">+</button>
 
+<!-- Modal -->
+<div class="modal fade" id="modalAgregar" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title">Agregar alimento</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label">Categoría</label>
+            <select id="categoria" class="form-select" onchange="cargarAlimentos()">
+              <option value="">Seleccioná una categoría</option>
+              <option value="LÁCTEOS">LÁCTEOS</option>
+              <option value="HUEVOS">HUEVOS</option>
+              <option value="CARNE - AVES">CARNE - AVES</option>
+              <option value="CARNE - VACUNA">CARNE - VACUNA</option>
+              <option value="CARNE - PESCADO">CARNE - PESCADO</option>
+              <option value="VEGETALES A">VEGETALES A</option>
+              <option value="VEGETALES B">VEGETALES B</option>
+              <option value="VEGETALES C">VEGETALES C</option>
+              <option value="FRUTAS A">FRUTAS A</option>
+              <option value="FRUTAS B">FRUTAS B</option>
+              <option value="FRUTAS C">FRUTAS C</option>
+              <option value="FRUTOS SECOS">FRUTOS SECOS</option>
+              <option value="CEREALES">CEREALES</option>
+              <option value="PANIFICADOS">PANIFICADOS</option>
+              <option value="DULCES">DULCES</option>
+              <option value="GRASAS">GRASAS</option>
+              <option value="OTROS">OTROS</option>
+            </select>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Buscar alimento</label>
+            <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento..." oninput="filtrarAlimentos()">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Alimento</label>
+            <select id="alimento-select" class="form-select" onchange="mostrarDatosAlimento()">
+              <option value="">Seleccioná un alimento</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Cantidad</label>
+            <input type="number" id="gramos" class="form-control" placeholder="Cantidad">
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button onclick="agregarAlimento()" class="btn btn-primary w-100" data-bs-dismiss="modal">➕ Agregar alimento</button>
+          </div>
+        </div>
+        <div id="detalle-alimento" class="row g-2 mt-3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  
 <!-- Segundo botón flotante (IMC) - más arriba para que no se encime -->
 <button onclick="abrirModalIMC()" class="btn btn-info position-fixed end-0 me-4 rounded-circle" style="bottom: 90px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">🧮</button>
 
