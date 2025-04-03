@@ -96,7 +96,7 @@
     );
 
     const columnas = [
-      "alimento", "valor_energetico", "agua", "proteinas", "lipidos_totales", "colesterol",
+      "valor_energetico", "agua", "proteinas", "lipidos_totales", "colesterol",
       "ac_grasos_saturados", "ac_grasos_monoinsaturados", "ac_grasos_poliinsaturados", "ac_grasos_trans",
       "ac_linoleico", "ac_alfalinolenico", "ac_araquidonico", "ac_epa", "ac_dha",
       "carbohidratos_disponibles", "carbohidratos_totales", "azucar_total", "azucar_agregado", "fibra",
@@ -115,6 +115,7 @@
     }
 
     const headerRow = document.getElementById('header-row');
+    headerRow.innerHTML = '<th>ALIMENTO</th><th>CANTIDAD</th>';
     columnas.forEach(col => {
       const th = document.createElement('th');
       th.textContent = col.replace(/_/g, ' ').toUpperCase();
@@ -176,7 +177,7 @@
       tabla.innerHTML = '';
       alimentosSeleccionados.forEach((a, i) => {
         let fila = `<tr><td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td>`;
-        columnas.slice(1).forEach(k => {
+        columnas.forEach(k => {
           const valorNumerico = convertirANumero(a[k]) * a.factor;
           fila += `<td>${isNaN(valorNumerico) ? '-' : valorNumerico.toFixed(1)}</td>`;
         });
