@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App Nutricional</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calculadora Nutricional</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.min.js"></script>
@@ -78,127 +78,126 @@
 </div>
 
 <script>
-const supabase = supabase.createClient('https://djbuwtemavldytssbicb.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4');
-let alimentosSeleccionados = [], grafico = null;
-const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
+  const supabase = window.supabase.createClient(
+    'https://djbuwtemavldytssbicb.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
+  );
 
-document.getElementById('buscador').addEventListener('input', cargarAlimentos);
+  let alimentosSeleccionados = [], grafico = null;
+  const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
-async function cargarAlimentos() {
-  const buscar = document.getElementById('buscador').value.trim().toLowerCase();
-  const select = document.getElementById('alimento-select');
-  select.innerHTML = '<option value="">Seleccioná un alimento</option>';
+  document.getElementById('buscador').addEventListener('input', cargarAlimentos);
 
-  let query = supabase
-    .from('alimentos_detallados')
-    .select('id, alimento')
-    .order('alimento', { ascending: true });
+  async function cargarAlimentos() {
+    const buscar = document.getElementById('buscador').value.trim().toLowerCase();
+    const select = document.getElementById('alimento-select');
+    select.innerHTML = '<option value="">Seleccioná un alimento</option>';
 
-  if (buscar) {
-    query = query.ilike('alimento', `%${buscar}%`);
+    let query = supabase
+      .from('alimentos_detallados')
+      .select('id, alimento')
+      .order('alimento', { ascending: true });
+
+    if (buscar) query = query.ilike('alimento', `%${buscar}%`);
+
+    const { data, error } = await query;
+    if (error) return console.error('Error al cargar alimentos:', error);
+
+    data.forEach(({ id, alimento }) => {
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = alimento;
+      select.appendChild(opt);
+    });
   }
 
-  const { data, error } = await query;
+  async function mostrarDatosAlimento() {
+    const id = document.getElementById('alimento-select').value;
+    const contenedor = document.getElementById('detalle-alimento');
+    contenedor.innerHTML = '';
+    if (!id) return;
 
-  if (error) {
-    console.error('Error al cargar alimentos:', error);
-    return;
+    const { data, error } = await supabase.from('alimentos_detallados').select('*').eq('id', id).single();
+    if (error) return console.error(error);
+    window.alimentoActual = data;
+
+    for (const [clave, valor] of Object.entries(data)) {
+      if (['id', 'alimento', 'categoria'].includes(clave)) continue;
+      const col = document.createElement('div');
+      col.className = 'col-md-3';
+      col.innerHTML = `<label class="form-label">${clave.toUpperCase()}</label><input class="form-control" value="${valor}" disabled>`;
+      contenedor.appendChild(col);
+    }
   }
 
-  data.forEach(({ id, alimento }) => {
-    const opt = document.createElement('option');
-    opt.value = id;
-    opt.textContent = alimento;
-    select.appendChild(opt);
-  });
-}
-
-async function mostrarDatosAlimento() {
-  const id = document.getElementById('alimento-select').value;
-  const contenedor = document.getElementById('detalle-alimento');
-  contenedor.innerHTML = '';
-  if (!id) return;
-
-  const { data, error } = await supabase.from('alimentos_detallados').select('*').eq('id', id).single();
-  if (error) return console.error(error);
-  window.alimentoActual = data;
-  for (const [clave, valor] of Object.entries(data)) {
-    if (['id', 'alimento', 'categoria'].includes(clave)) continue;
-    const col = document.createElement('div');
-    col.className = 'col-md-3';
-    col.innerHTML = `<label class="form-label">${clave.toUpperCase()}</label><input class="form-control" value="${valor}" disabled>`;
-    contenedor.appendChild(col);
-  }
-}
-
-function agregarAlimento() {
-  const a = window.alimentoActual;
-  const cantidad = parseFloat(document.getElementById('gramos').value);
-  if (!cantidad || cantidad <= 0 || !a) return alert('Completá todos los campos.');
-  const factor = cantidad / 100;
-  alimentosSeleccionados.push({ ...a, cantidad, unidad: 'g', factor });
-  actualizarTabla();
-}
-
-function actualizarTabla() {
-  const tabla = document.getElementById('tabla-alimentos');
-  tabla.innerHTML = '';
-  alimentosSeleccionados.forEach((a, i) => {
-    tabla.innerHTML += `<tr>
-      <td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.valor_energetico*a.factor).toFixed(1)}</td><td>${(a.carbohidratos_disponibles*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.lipidos_totales*a.factor).toFixed(1)}</td>
-      <td>${(a.sodio*a.factor).toFixed(1)}</td><td>${(a.potasio*a.factor).toFixed(1)}</td><td>${(a.fosforo*a.factor).toFixed(1)}</td><td>${(a.calcio*a.factor).toFixed(1)}</td><td>${(a.hierro*a.factor).toFixed(1)}</td><td>${(a.colesterol*a.factor).toFixed(1)}</td>
-      <td>${(a.purinas*a.factor).toFixed(1) || 0}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.acido_folico*a.factor).toFixed(1)}</td>
-      <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
-    </tr>`;
-  });
-  calcularTotales();
-}
-
-function calcularTotales() {
-  const t = { calorias:0, hc:0, proteinas:0, grasas:0 };
-  alimentosSeleccionados.forEach(a => {
-    t.calorias += a.valor_energetico * a.factor;
-    t.hc += a.carbohidratos_disponibles * a.factor;
-    t.proteinas += a.proteinas * a.factor;
-    t.grasas += a.lipidos_totales * a.factor;
-  });
-  document.getElementById('totales').textContent = `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
-  actualizarGrafico(t);
-}
-
-function actualizarGrafico(t) {
-  const ctx = document.getElementById('graficoCircular').getContext('2d');
-  if (grafico) grafico.destroy();
-  grafico = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
-      datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
-    },
-    options: { plugins: { legend: { position: 'bottom' } } }
-  });
-  document.getElementById('pctCarbs').textContent = Math.round(t.hc / macrosObjetivo.hc * 100) + '%';
-  document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / macrosObjetivo.proteinas * 100) + '%';
-  document.getElementById('pctGrasas').textContent = Math.round(t.grasas / macrosObjetivo.grasas * 100) + '%';
-  document.getElementById('carbsRestantes').textContent = (macrosObjetivo.hc - t.hc).toFixed(1) + 'g restantes';
-  document.getElementById('proteinasRestantes').textContent = (macrosObjetivo.proteinas - t.proteinas).toFixed(1) + 'g restantes';
-  document.getElementById('grasasRestantes').textContent = (macrosObjetivo.grasas - t.grasas).toFixed(1) + 'g restantes';
-  document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
-}
-
-function eliminarAlimento(index) {
-  alimentosSeleccionados.splice(index, 1);
-  actualizarTabla();
-}
-
-function modificarCantidad(index) {
-  const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
-  if (nueva && !isNaN(nueva) && nueva > 0) {
-    alimentosSeleccionados[index].cantidad = parseFloat(nueva);
-    alimentosSeleccionados[index].factor = nueva / 100;
+  function agregarAlimento() {
+    const a = window.alimentoActual;
+    const cantidad = parseFloat(document.getElementById('gramos').value);
+    if (!cantidad || cantidad <= 0 || !a) return alert('Completá todos los campos.');
+    const factor = cantidad / 100;
+    alimentosSeleccionados.push({ ...a, cantidad, unidad: 'g', factor });
     actualizarTabla();
   }
-}
+
+  function actualizarTabla() {
+    const tabla = document.getElementById('tabla-alimentos');
+    tabla.innerHTML = '';
+    alimentosSeleccionados.forEach((a, i) => {
+      tabla.innerHTML += `<tr>
+        <td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.valor_energetico*a.factor).toFixed(1)}</td><td>${(a.carbohidratos_disponibles*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.lipidos_totales*a.factor).toFixed(1)}</td>
+        <td>${(a.sodio*a.factor).toFixed(1)}</td><td>${(a.potasio*a.factor).toFixed(1)}</td><td>${(a.fosforo*a.factor).toFixed(1)}</td><td>${(a.calcio*a.factor).toFixed(1)}</td><td>${(a.hierro*a.factor).toFixed(1)}</td><td>${(a.colesterol*a.factor).toFixed(1)}</td>
+        <td>${(a.purinas*a.factor).toFixed(1) || 0}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.acido_folico*a.factor).toFixed(1)}</td>
+        <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
+      </tr>`;
+    });
+    calcularTotales();
+  }
+
+  function calcularTotales() {
+    const t = { calorias:0, hc:0, proteinas:0, grasas:0 };
+    alimentosSeleccionados.forEach(a => {
+      t.calorias += a.valor_energetico * a.factor;
+      t.hc += a.carbohidratos_disponibles * a.factor;
+      t.proteinas += a.proteinas * a.factor;
+      t.grasas += a.lipidos_totales * a.factor;
+    });
+    document.getElementById('totales').textContent = `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
+    actualizarGrafico(t);
+  }
+
+  function actualizarGrafico(t) {
+    const ctx = document.getElementById('graficoCircular').getContext('2d');
+    if (grafico) grafico.destroy();
+    grafico = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
+        datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
+      },
+      options: { plugins: { legend: { position: 'bottom' } } }
+    });
+    document.getElementById('pctCarbs').textContent = Math.round(t.hc / macrosObjetivo.hc * 100) + '%';
+    document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / macrosObjetivo.proteinas * 100) + '%';
+    document.getElementById('pctGrasas').textContent = Math.round(t.grasas / macrosObjetivo.grasas * 100) + '%';
+    document.getElementById('carbsRestantes').textContent = (macrosObjetivo.hc - t.hc).toFixed(1) + 'g restantes';
+    document.getElementById('proteinasRestantes').textContent = (macrosObjetivo.proteinas - t.proteinas).toFixed(1) + 'g restantes';
+    document.getElementById('grasasRestantes').textContent = (macrosObjetivo.grasas - t.grasas).toFixed(1) + 'g restantes';
+    document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
+  }
+
+  function eliminarAlimento(index) {
+    alimentosSeleccionados.splice(index, 1);
+    actualizarTabla();
+  }
+
+  function modificarCantidad(index) {
+    const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
+    if (nueva && !isNaN(nueva) && nueva > 0) {
+      alimentosSeleccionados[index].cantidad = parseFloat(nueva);
+      alimentosSeleccionados[index].factor = nueva / 100;
+      actualizarTabla();
+    }
+  }
 </script>
 </body>
 </html>
