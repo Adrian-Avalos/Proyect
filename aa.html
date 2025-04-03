@@ -67,7 +67,7 @@
       <thead>
         <tr>
           <th>Alimento</th><th>Cant.</th><th>Cal</th><th>Agua</th><th>Prot</th><th>Grasa</th><th>Col</th><th>Satur.</th><th>Monoinsat.</th><th>Poliinsat.</th><th>Trans</th><th>Linoleico</th><th>Alfa-lin.</th><th>Araquid.</th><th>EPA</th><th>DHA</th><th>HC Disp.</th><th>HC Tot.</th><th>Azúcar</th><th>Az. Agreg.</th><th>Fibra</th><th>Alcohol</th><th>Cenizas</th><th>Na</th><th>K</th><th>Ca</th><th>Cu</th><th>P</th><th>Fe</th><th>Mg</th><th>Zn</th><th>Niacina</th><th>Folato EFD</th><th>A. Fólico</th><th>Vit A</th><th>Retinol</th><th>Tiamina</th><th>Riboflavina</th><th>Vit B12</th><th>Vit C</th><th>Vit D</th><th>Acciones</th>
-        </tr>
+            </tr>
       </thead>
       <tbody id="tabla-alimentos"></tbody>
     </table>
@@ -87,24 +87,6 @@
     let alimentosSeleccionados = [], grafico = null;
     const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
-    const columnas = [
-      "alimento", "valor_energetico", "agua", "proteinas", "lipidos_totales", "colesterol",
-      "ac_grasos_saturados", "ac_grasos_monoinsaturados", "ac_grasos_poliinsaturados", "ac_grasos_trans",
-      "ac_linoleico", "ac_alfalinolenico", "ac_araquidonico", "ac_epa", "ac_dha",
-      "carbohidratos_disponibles", "carbohidratos_totales", "azucar_total", "azucar_agregado", "fibra",
-      "alcohol", "cenizas", "sodio", "potasio", "calcio", "cobre", "fosforo", "hierro",
-      "magnesio", "zinc", "niacina", "folato_efd", "acido_folico", "vitamina_a_rae", "retinol",
-      "tiamina", "riboflavina", "vitamina_b12", "vitamina_c", "vitamina_d"
-    ];
-
-    const headerRow = document.getElementById('header-row');
-    columnas.forEach(col => {
-      const th = document.createElement('th');
-      th.textContent = col.replace(/_/g, ' ').toUpperCase();
-      headerRow.appendChild(th);
-    });
-    headerRow.innerHTML += '<th>Acciones</th>';
-
     document.getElementById('buscador').addEventListener('input', cargarAlimentos);
 
     async function cargarAlimentos() {
@@ -112,7 +94,11 @@
       const select = document.getElementById('alimento-select');
       select.innerHTML = '<option value="">Seleccioná un alimento</option>';
 
-      let query = client.from('alimentos_detallados').select('id, alimento').order('alimento', { ascending: true });
+      let query = client
+        .from('alimentos_detallados')
+        .select('id, alimento')
+        .order('alimento', { ascending: true });
+
       if (buscar) query = query.ilike('alimento', `%${buscar}%`);
 
       const { data, error } = await query;
@@ -137,7 +123,7 @@
       window.alimentoActual = data;
 
       for (const [clave, valor] of Object.entries(data)) {
-        if (clave === 'id') continue;
+        if (['id', 'alimento', 'categoria'].includes(clave)) continue;
         const col = document.createElement('div');
         col.className = 'col-md-3';
         col.innerHTML = `<label class="form-label">${clave.toUpperCase()}</label><input class="form-control" value="${valor}" disabled>`;
@@ -158,18 +144,18 @@
       const tabla = document.getElementById('tabla-alimentos');
       tabla.innerHTML = '';
       alimentosSeleccionados.forEach((a, i) => {
-        let fila = `<tr><td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td>`;
-        columnas.slice(1).forEach(k => {
-          fila += `<td>${(a[k]*a.factor).toFixed(1)}</td>`;
-        });
-        fila += `<td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td></tr>`;
-        tabla.innerHTML += fila;
+        tabla.innerHTML += `<tr>
+          <td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.valor_energetico*a.factor).toFixed(1)}</td><td>${(a.carbohidratos_disponibles*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.lipidos_totales*a.factor).toFixed(1)}</td>
+          <td>${(a.sodio*a.factor).toFixed(1)}</td><td>${(a.potasio*a.factor).toFixed(1)}</td><td>${(a.fosforo*a.factor).toFixed(1)}</td><td>${(a.calcio*a.factor).toFixed(1)}</td><td>${(a.hierro*a.factor).toFixed(1)}</td><td>${(a.colesterol*a.factor).toFixed(1)}</td>
+          <td>${(a.purinas*a.factor).toFixed(1) || 0}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.acido_folico*a.factor).toFixed(1)}</td>
+          <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
+        </tr>`;
       });
       calcularTotales();
     }
 
     function calcularTotales() {
-      const t = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
+      const t = { calorias:0, hc:0, proteinas:0, grasas:0 };
       alimentosSeleccionados.forEach(a => {
         t.calorias += a.valor_energetico * a.factor;
         t.hc += a.carbohidratos_disponibles * a.factor;
