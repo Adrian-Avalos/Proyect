@@ -84,21 +84,42 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
     );
 
-    let alimentosSeleccionados = [], grafico = null;
+    // 2. Columnas que se mostrarán en la tabla
+    const columnas = [
+      "alimento", "valor_energetico", "agua", "proteinas", "lipidos_totales", "colesterol",
+      "ac_grasos_saturados", "ac_grasos_monoinsaturados", "ac_grasos_poliinsaturados", "ac_grasos_trans",
+      "ac_linoleico", "ac_alfalinolenico", "ac_araquidonico", "ac_epa", "ac_dha",
+      "carbohidratos_disponibles", "carbohidratos_totales", "azucar_total", "azucar_agregado", "fibra",
+      "alcohol", "cenizas", "sodio", "potasio", "calcio", "cobre", "fosforo", "hierro",
+      "magnesio", "zinc", "niacina", "folato_efd", "acido_folico", "vitamina_a_rae", "retinol",
+      "tiamina", "riboflavina", "vitamina_b12", "vitamina_c", "vitamina_d"
+    ];
+
+    // 3. Objetivo diario de macros (puede ser personalizado)
     const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
+    // 4. Variables globales para la app
+    let alimentosSeleccionados = [], grafico = null;
+
+    // 5. Generar encabezado dinámico de la tabla
+    const headerRow = document.getElementById('header-row');
+    columnas.forEach(col => {
+      const th = document.createElement('th');
+      th.textContent = col.replace(/_/g, ' ').toUpperCase();
+      headerRow.appendChild(th);
+    });
+    headerRow.innerHTML += '<th>Acciones</th>';
+
+    // 6. Evento para buscar alimentos mientras se escribe
     document.getElementById('buscador').addEventListener('input', cargarAlimentos);
 
+    // 7. Función que carga alimentos desde Supabase
     async function cargarAlimentos() {
       const buscar = document.getElementById('buscador').value.trim().toLowerCase();
       const select = document.getElementById('alimento-select');
       select.innerHTML = '<option value="">Seleccioná un alimento</option>';
 
-      let query = client
-        .from('alimentos_detallados')
-        .select('id, alimento')
-        .order('alimento', { ascending: true });
-
+      let query = client.from('alimentos_detallados').select('id, alimento').order('alimento', { ascending: true });
       if (buscar) query = query.ilike('alimento', `%${buscar}%`);
 
       const { data, error } = await query;
@@ -112,6 +133,7 @@
       });
     }
 
+    // 8. Mostrar datos del alimento seleccionado
     window.mostrarDatosAlimento = async function () {
       const id = document.getElementById('alimento-select').value;
       const contenedor = document.getElementById('detalle-alimento');
@@ -123,14 +145,15 @@
       window.alimentoActual = data;
 
       for (const [clave, valor] of Object.entries(data)) {
-        if (['id', 'alimento', 'categoria'].includes(clave)) continue;
+        if (clave === 'id') continue;
         const col = document.createElement('div');
         col.className = 'col-md-3';
-        col.innerHTML = `<label class="form-label">${clave.toUpperCase()}</label><input class="form-control" value="${valor}" disabled>`;
+        col.innerHTML = `<label class="form-label">${clave.replace(/_/g, ' ').toUpperCase()}</label><input class="form-control" value="${valor}" disabled>`;
         contenedor.appendChild(col);
       }
-    }
+    };
 
+    // 9. Agregar alimento a la tabla
     window.agregarAlimento = function () {
       const a = window.alimentoActual;
       const cantidad = parseFloat(document.getElementById('gramos').value);
@@ -138,34 +161,40 @@
       const factor = cantidad / 100;
       alimentosSeleccionados.push({ ...a, cantidad, unidad: 'g', factor });
       actualizarTabla();
-    }
+    };
 
+    // 10. Actualizar la tabla con los alimentos agregados
     function actualizarTabla() {
       const tabla = document.getElementById('tabla-alimentos');
       tabla.innerHTML = '';
       alimentosSeleccionados.forEach((a, i) => {
-        tabla.innerHTML += `<tr>
-          <td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td><td>${(a.valor_energetico*a.factor).toFixed(1)}</td><td>${(a.carbohidratos_disponibles*a.factor).toFixed(1)}</td><td>${(a.proteinas*a.factor).toFixed(1)}</td><td>${(a.lipidos_totales*a.factor).toFixed(1)}</td>
-          <td>${(a.sodio*a.factor).toFixed(1)}</td><td>${(a.potasio*a.factor).toFixed(1)}</td><td>${(a.fosforo*a.factor).toFixed(1)}</td><td>${(a.calcio*a.factor).toFixed(1)}</td><td>${(a.hierro*a.factor).toFixed(1)}</td><td>${(a.colesterol*a.factor).toFixed(1)}</td>
-          <td>${(a.purinas*a.factor).toFixed(1) || 0}</td><td>${(a.fibra*a.factor).toFixed(1)}</td><td>${(a.agua*a.factor).toFixed(1)}</td><td>${(a.acido_folico*a.factor).toFixed(1)}</td>
-          <td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button><button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td>
-        </tr>`;
+        let fila = `<tr><td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td>`;
+        columnas.slice(1).forEach(k => {
+          const valor = a[k] * a.factor;
+          fila += `<td>${isNaN(valor) ? '-' : valor.toFixed(1)}</td>`;
+        });
+        fila += `<td><button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button>
+                 <button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button></td></tr>`;
+        tabla.innerHTML += fila;
       });
       calcularTotales();
     }
 
+    // 11. Calcular totales para el resumen general y gráfico
     function calcularTotales() {
-      const t = { calorias:0, hc:0, proteinas:0, grasas:0 };
+      const t = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
       alimentosSeleccionados.forEach(a => {
         t.calorias += a.valor_energetico * a.factor;
         t.hc += a.carbohidratos_disponibles * a.factor;
         t.proteinas += a.proteinas * a.factor;
         t.grasas += a.lipidos_totales * a.factor;
       });
-      document.getElementById('totales').textContent = `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
+      document.getElementById('totales').textContent =
+        `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
       actualizarGrafico(t);
     }
 
+    // 12. Mostrar gráfico circular con los porcentajes
     function actualizarGrafico(t) {
       const ctx = document.getElementById('graficoCircular').getContext('2d');
       if (grafico) grafico.destroy();
@@ -186,10 +215,11 @@
       document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
     }
 
+    // 13. Funciones para eliminar o modificar cantidades
     window.eliminarAlimento = function (index) {
       alimentosSeleccionados.splice(index, 1);
       actualizarTabla();
-    }
+    };
 
     window.modificarCantidad = function (index) {
       const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
@@ -198,8 +228,6 @@
         alimentosSeleccionados[index].factor = nueva / 100;
         actualizarTabla();
       }
-    }
+    };
   });
 </script>
-</body>
-</html>
