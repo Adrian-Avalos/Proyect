@@ -230,44 +230,44 @@
       toggleBtn.textContent = activo ? 'Ocultar detalles nutricionales' : 'Mostrar detalles nutricionales';
     });
 
+});
 
+ function actualizarGrafico(t) {
+  const ctxMacros = document.getElementById('graficoCircular').getContext('2d');
+  const ctxCalorias = document.getElementById('graficoBarras').getContext('2d');
 
-  function actualizarGrafico(t) {
-    const ctxMacros = document.getElementById('graficoCircular').getContext('2d');
-    const ctxCalorias = document.getElementById('graficoBarras').getContext('2d');
+  if (window.graficoMacros) window.graficoMacros.destroy();
+  if (window.graficoCalorias) window.graficoCalorias.destroy();
 
-    if (window.graficoMacros) window.graficoMacros.destroy();
-    if (window.graficoCalorias) window.graficoCalorias.destroy();
+  window.graficoMacros = new Chart(ctxMacros, {
+    type: 'doughnut',
+    data: {
+      labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
+      datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
 
-    window.graficoMacros = new Chart(ctxMacros, {
-      type: 'doughnut',
-      data: {
-        labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
-        datasets: [{ data: [t.hc, t.proteinas, t.grasas], backgroundColor: ['#ffc107', '#198754', '#dc3545'] }]
-      },
-      options: { plugins: { legend: { position: 'bottom' } } }
-    });
+  window.graficoCalorias = new Chart(ctxCalorias, {
+    type: 'bar',
+    data: {
+      labels: ['Calorías'],
+      datasets: [
+        { label: 'Consumidas', data: [t.calorias], backgroundColor: '#0d6efd' },
+        { label: 'Objetivo', data: [2488], backgroundColor: '#6c757d' }
+      ]
+    },
+    options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+  });
 
-    window.graficoCalorias = new Chart(ctxCalorias, {
-      type: 'bar',
-      data: {
-        labels: ['Calorías'],
-        datasets: [
-          { label: 'Consumidas', data: [t.calorias], backgroundColor: '#0d6efd' },
-          { label: 'Objetivo', data: [2488], backgroundColor: '#6c757d' }
-        ]
-      },
-      options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
-    });
-
-    document.getElementById('pctCarbs').textContent = Math.round(t.hc / 311 * 100) + '%';
-    document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / 124 * 100) + '%';
-    document.getElementById('pctGrasas').textContent = Math.round(t.grasas / 82 * 100) + '%';
-    document.getElementById('carbsRestantes').textContent = (311 - t.hc).toFixed(1) + 'g restantes';
-    document.getElementById('proteinasRestantes').textContent = (124 - t.proteinas).toFixed(1) + 'g restantes';
-    document.getElementById('grasasRestantes').textContent = (82 - t.grasas).toFixed(1) + 'g restantes';
-    document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(2488 - t.calorias).toFixed(0)}</strong> calorías`;
-  }
+  document.getElementById('pctCarbs').textContent = Math.round(t.hc / 311 * 100) + '%';
+  document.getElementById('pctProteinas').textContent = Math.round(t.proteinas / 124 * 100) + '%';
+  document.getElementById('pctGrasas').textContent = Math.round(t.grasas / 82 * 100) + '%';
+  document.getElementById('carbsRestantes').textContent = (311 - t.hc).toFixed(1) + 'g restantes';
+  document.getElementById('proteinasRestantes').textContent = (124 - t.proteinas).toFixed(1) + 'g restantes';
+  document.getElementById('grasasRestantes').textContent = (82 - t.grasas).toFixed(1) + 'g restantes';
+  document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(2488 - t.calorias).toFixed(0)}</strong> calorías`;
+}
 </script>
 </body>
 </html>
