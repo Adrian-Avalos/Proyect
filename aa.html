@@ -14,8 +14,8 @@
     .carbs { border-color: #ffc107; color: #ffc107; }
     .protein { border-color: #198754; color: #198754; }
     .fat { border-color: #dc3545; color: #dc3545; }
-    .table thead { background-color: #222; color: #fff; }
-    .table tbody td { background-color: #333; color: #fff; }
+    .table thead { background-color: #222; color: #fff; font-size: 0.8rem; }
+    .table tbody td { background-color: #333; color: #fff; font-size: 0.75rem; }
     .form-section { background: #111; padding: 1rem; border-radius: 1rem; margin-top: 2rem; }
   </style>
 </head>
@@ -39,34 +39,11 @@
     </div>
   </div>
 
-  <div class="form-section">
-    <div class="row g-2">
-      <div class="col-md-8">
-        <label class="form-label">Buscar alimento</label>
-        <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento...">
-      </div>
-      <div class="col-md-5">
-        <label class="form-label">Alimento</label>
-        <select id="alimento-select" class="form-select" onchange="mostrarDatosAlimento()">
-          <option value="">Seleccioná un alimento</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Cantidad</label>
-        <input type="number" id="gramos" class="form-control" placeholder="Cantidad">
-      </div>
-      <div class="col-md-4 d-flex align-items-end">
-        <button onclick="agregarAlimento()" class="btn btn-primary w-100">Agregar alimento</button>
-      </div>
-    </div>
-    <div id="detalle-alimento" class="row g-2 mt-3"></div>
-  </div>
-
   <div class="table-responsive mt-4">
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
-          <th>Alimento</th><th>Cant.</th><th>Cal</th><th>HC</th><th>Prot</th><th>Grasa</th><th>Na</th><th>K</th><th>P</th><th>Ca</th><th>Fe</th><th>Col</th><th>Pur</th><th>Fib</th><th>Agua</th><th>AF</th><th>Acciones</th>
+          <th>Alimento</th><th>Cant.</th><th>Cal</th><th>HC Disp</th><th>HC Tot</th><th>Azúcar</th><th>Azúcar Ag.</th><th>Prot</th><th>Grasa</th><th>Sat.</th><th>Mono.</th><th>Poli.</th><th>Trans</th><th>Linol.</th><th>Alfa-lin.</th><th>Araquid.</th><th>EPA</th><th>DHA</th><th>Na</th><th>K</th><th>P</th><th>Ca</th><th>Fe</th><th>Cobre</th><th>Mg</th><th>Zinc</th><th>Niacina</th><th>Fol. EFD</th><th>Fólico</th><th>Vit. A</th><th>Retinol</th><th>Tiamina</th><th>Riboflavina</th><th>B12</th><th>Vit. C</th><th>Vit. D</th><th>Fibra</th><th>Agua</th><th>Alcohol</th><th>Cenizas</th><th>Col.</th><th>Acciones</th>
         </tr>
       </thead>
       <tbody id="tabla-alimentos"></tbody>
@@ -76,7 +53,6 @@
   <div id="totales" class="text-center fw-bold fs-5"></div>
   <canvas id="graficoCircular" width="300" height="300" class="mx-auto d-block mt-4"></canvas>
 </div>
-
 <script>
   window.addEventListener('DOMContentLoaded', async () => {
     const client = supabase.createClient(
