@@ -41,16 +41,6 @@
 
   <div class="form-section">
     <div class="row g-2">
-      <div class="col-md-4">
-        <label class="form-label">Categoría</label>
-        <select id="categoria" class="form-select" onchange="cargarAlimentos()">
-          <option value="">Seleccioná una categoría</option>
-          <option value="FRUTAS A">FRUTAS A</option>
-          <option value="FRUTAS B">FRUTAS B</option>
-          <option value="VERDURAS">VERDURAS</option>
-          <option value="CARNES">CARNES</option>
-        </select>
-      </div>
       <div class="col-md-8">
         <label class="form-label">Buscar alimento</label>
         <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento...">
@@ -92,18 +82,29 @@ const supabase = supabase.createClient('https://djbuwtemavldytssbicb.supabase.co
 let alimentosSeleccionados = [], grafico = null;
 const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
+document.getElementById('buscador').addEventListener('input', cargarAlimentos);
+
 async function cargarAlimentos() {
-  const categoria = document.getElementById('categoria').value;
+  const buscar = document.getElementById('buscador').value.trim().toLowerCase();
   const select = document.getElementById('alimento-select');
   select.innerHTML = '<option value="">Seleccioná un alimento</option>';
-  if (!categoria) return;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('alimentos_detallados')
     .select('id, alimento')
-    .ilike('categoria', `%${categoria}%`);
+    .order('alimento', { ascending: true });
 
-  if (error) return console.error(error);
+  if (buscar) {
+    query = query.ilike('alimento', `%${buscar}%`);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error('Error al cargar alimentos:', error);
+    return;
+  }
+
   data.forEach(({ id, alimento }) => {
     const opt = document.createElement('option');
     opt.value = id;
