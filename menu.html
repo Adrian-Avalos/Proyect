@@ -54,12 +54,26 @@
   <div id="totales" class="text-center fw-bold fs-5"></div>
   <canvas id="graficoCircular" width="300" height="300" class="mx-auto d-block mt-4"></canvas>
 </div>
-<button onclick="window.open('Calculadora-Ncompl.html', '_blank')" class="btn btn-info position-fixed end-0 me-4 rounded-circle" style="bottom: 100px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">📈</button>
-<button onclick="window.open('imc.html', '_blank')" class="btn btn-info position-fixed end-0 me-4 rounded-circle" style="bottom: 90px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">🧮</button>
+<!-- Botón Calculadora Nutricional -->
+<button onclick="window.open('Calculadora-Ncompl.html', '_blank')" 
+        class="btn btn-info position-fixed end-0 me-4 rounded-circle" 
+        style="bottom: 170px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">
+    📈
+</button>
 
-<!-- Botón flotante para abrir el modal -->
-<button onclick="abrirModal()" class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle" style="width: 60px; height: 60px; font-size: 1.5rem;">+</button>
+<!-- Botón IMC -->
+<button onclick="window.open('imc.html', '_blank')" 
+        class="btn btn-info position-fixed end-0 me-4 rounded-circle" 
+        style="bottom: 100px; width: 60px; height: 60px; font-size: 1.2rem; z-index: 1050;">
+    🧮
+</button>
 
+<!-- Botón flotante para abrir modal -->
+<button onclick="abrirModal()" 
+        class="btn btn-success position-fixed bottom-0 end-0 m-4 rounded-circle" 
+        style="width: 60px; height: 60px; font-size: 1.5rem;">
+    +
+</button>
 <!-- Modal -->
 <div class="modal fade" id="modalAgregar" tabindex="-1">
   <div class="modal-dialog modal-lg">
