@@ -222,14 +222,11 @@
     };
   });
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('toggle-detalle');
-    const detalleAlimento = document.getElementById('detalle-alimento');
-    toggleBtn.addEventListener('click', () => {
-      const activo = detalleAlimento.classList.toggle('activo');
-      toggleBtn.textContent = activo ? 'Ocultar detalles nutricionales' : 'Mostrar detalles nutricionales';
-    });
-
+const toggleBtn = document.getElementById('toggle-detalle');
+const detalleAlimento = document.getElementById('detalle-alimento');
+toggleBtn.addEventListener('click', () => {
+  const activo = detalleAlimento.classList.toggle('activo');
+  toggleBtn.textContent = activo ? 'Ocultar detalles nutricionales' : 'Mostrar detalles nutricionales';
 });
 
  function actualizarGrafico(t) {
