@@ -17,6 +17,20 @@
     .table thead { background-color: #222; color: #fff; }
     .table tbody td { background-color: #333; color: #fff; }
     .form-section { background: #111; padding: 1rem; border-radius: 1rem; margin-top: 2rem; }
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
@@ -39,43 +53,59 @@
     </div>
   </div>
 
-  <div class="form-section">
-    <div class="row g-2">
-      <div class="col-md-8">
-        <label class="form-label">Buscar alimento</label>
-        <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento...">
-      </div>
-      <div class="col-md-5">
-        <label class="form-label">Alimento</label>
-        <select id="alimento-select" class="form-select" onchange="mostrarDatosAlimento()">
-          <option value="">Seleccioná un alimento</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Cantidad</label>
-        <input type="number" id="gramos" class="form-control" placeholder="Cantidad">
-      </div>
-      <div class="col-md-4 d-flex align-items-end">
-        <button onclick="agregarAlimento()" class="btn btn-primary w-100">Agregar alimento</button>
-      </div>
-    </div>
-    <div id="detalle-alimento" class="row g-2 mt-3"></div>
-  </div>
+  <div id="detalle-alimento" class="row g-2 mt-3"></div>
 
   <div class="table-responsive mt-4">
-  <table class="table table-striped table-bordered">
-    <thead>
-      <tr id="header-row"></tr>
-    </thead>
-    <tbody id="tabla-alimentos"></tbody>
-  </table>
-</div>
-
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr id="header-row"></tr>
+      </thead>
+      <tbody id="tabla-alimentos"></tbody>
+    </table>
+  </div>
 
   <div id="totales" class="text-center fw-bold fs-5"></div>
   <canvas id="graficoCircular" width="300" height="300" class="mx-auto d-block mt-4"></canvas>
 </div>
 
+<!-- Botón flotante -->
+<button class="floating-button" data-bs-toggle="modal" data-bs-target="#modalAgregar">＋</button>
+
+<!-- Modal para agregar alimento -->
+<div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAgregarLabel">Agregar alimento</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-2">
+          <div class="col-md-8">
+            <label class="form-label">Buscar alimento</label>
+            <input type="text" id="buscador" class="form-control" placeholder="Buscar alimento...">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Alimento</label>
+            <select id="alimento-select" class="form-select" onchange="mostrarDatosAlimento()">
+              <option value="">Seleccioná un alimento</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Cantidad (g)</label>
+            <input type="number" id="gramos" class="form-control" placeholder="Cantidad">
+          </div>
+        </div>
+        <div id="detalle-alimento" class="row g-2 mt-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="agregarAlimento()" data-bs-dismiss="modal">Agregar alimento</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   window.addEventListener('DOMContentLoaded', async () => {
     const client = supabase.createClient(
@@ -230,3 +260,5 @@
     };
   });
 </script>
+</body>
+</html>
