@@ -2,6 +2,8 @@ const CACHE_NAME = "nutricion-cache-v1";
 const urlsToCache = [
   "index.html",
   "menu.html",
+  "Calculadora-Ncompl.html",
+  "imc.html",
   "manifest.json",
   "imagenes/icono-192.png",
   "imagenes/icono-512.png",
