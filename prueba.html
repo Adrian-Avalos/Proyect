@@ -7,27 +7,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
 
-  <!-- Manifest e íconos PWA -->
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="imagenes/icono.ico">
-  <link rel="icon" type="image/png" href="imagenes/icono.png">
-
   <title>Nutrición-APP</title>
+
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('SW registrado:', reg.scope))
-          .catch(err => console.error('SW error:', err));
-      });
-    }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
-    body {
+
+
+
+body {
       margin: 0;
       background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
@@ -168,6 +158,7 @@
 
 
   <!-- SLIDES -->
+   <!-- SLIDES -->
   <div id="slidesContainer">
     <div class="slide slide1">
       <div>
@@ -257,10 +248,10 @@
   </div>
 
   <script>
-    // Inicialización de Supabase
+    // Inicializar supabase al inicio
     const supabase = supabase.createClient(
-      'https://djbuwtemavldytssbicb.supabase.co', 
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
+      'https://djbuwtemavldytssbicb.supabase.co', // Tu URL de Supabase
+      'tu_api_key_aqui' // Tu API Key de Supabase
     );
 
     // Función de inicio de sesión
@@ -271,7 +262,7 @@
 
       try {
         const { data, error } = await supabase
-          .from('usuarios')
+          .from('usuarios') // Asegúrate de que la tabla 'usuarios' esté creada correctamente
           .select('*')
           .eq('email', email)
           .eq('password', password)
