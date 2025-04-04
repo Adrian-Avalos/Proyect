@@ -2,30 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
   <title>Nutrición-APP</title>
+
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Service Worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('SW registrado:', reg.scope))
-          .catch(err => console.error('SW error:', err));
-      });
-    }
-  </script>
+  <!-- Cargar Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
     body {
       margin: 0;
       background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
-      overflow: hidden;
     }
 
     #modalLogin {
@@ -56,10 +48,6 @@
       color: #fff;
     }
 
-    .form-control::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-
     .btn-green {
       background-color: #28a745;
       color: #fff;
@@ -69,21 +57,12 @@
       border: none;
       width: 100%;
     }
-
-    .cerrar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 30px;
-      cursor: pointer;
-      color: #fff;
-    }
   </style>
 </head>
 <body>
 
+  <!-- Modal Login -->
   <div id="modalLogin">
-    <div class="cerrar" onclick="cerrarModal()">✕</div>
     <h4>Inicia sesión</h4>
     <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
       <div class="form-group">
@@ -96,13 +75,28 @@
       </div>
       <button type="submit" class="btn-green">Inicia sesión</button>
     </form>
+
+    <form onsubmit="return registrarUsuario(event)" style="width: 100%; max-width: 350px; display:none;" id="formRegistro">
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" class="form-control" id="registroNombre" required>
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" class="form-control" id="registroEmail" required>
+      </div>
+      <div class="form-group input-group">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" id="registroPassword" required>
+      </div>
+      <button type="submit" class="btn-green">Registrarse</button>
+    </form>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    // Inicialización de Supabase
-    const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
-    const supabaseKey = 'YOUR_SUPABASE_KEY'; // Coloca tu API Key de Supabase
+    // URL y clave de Supabase
+    const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co'; // Cambia esto con tu URL
+    const supabaseKey = 'YOUR_SUPABASE_KEY'; // Cambia esto con tu clave
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     // Función para validar el login
@@ -111,30 +105,60 @@
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      // Validación de usuario con Supabase
       const { data, error } = await supabase
-        .from("usuarios")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .single(); // Utilizamos `.single()` ya que esperamos un solo registro
+        .from('usuarios')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .single();
 
       if (error || !data) {
         alert("Usuario o contraseña incorrectos");
       } else {
-        localStorage.setItem("usuario", JSON.stringify(data)); // Guardamos la información del usuario en el localStorage
-        location.href = "menu.html"; // Redirigir al menú
+        localStorage.setItem("usuario", JSON.stringify(data));
+        window.location.href = "menu.html";  // Redirige al menú si la autenticación es exitosa
       }
     }
 
-    // Función para cerrar el modal de login
-    function cerrarModal() {
-      document.getElementById('modalLogin').classList.remove('mostrar');
+    // Función para registrar un usuario
+    async function registrarUsuario(event) {
+      event.preventDefault();
+      const nombre = document.getElementById("registroNombre").value.trim();
+      const email = document.getElementById("registroEmail").value.trim();
+      const password = document.getElementById("registroPassword").value.trim();
+
+      const { data, error } = await supabase
+        .from('usuarios')
+        .insert([
+          { email, password, nombre }
+        ]);
+
+      if (error) {
+        alert("Error al registrar: " + error.message);
+      } else {
+        alert("Registrado exitosamente, ahora puedes iniciar sesión.");
+        toggleForm();  // Cambia al formulario de login después de registrar
+      }
+    }
+
+    // Función para cambiar entre el formulario de login y registro
+    function toggleForm() {
+      const loginForm = document.querySelector('form#modalLogin form');
+      const registerForm = document.getElementById('formRegistro');
+      const isLogin = loginForm.style.display !== 'none';
+
+      loginForm.style.display = isLogin ? 'none' : 'block';
+      registerForm.style.display = isLogin ? 'block' : 'none';
     }
 
     // Función para mostrar el modal de login
     function irLogin() {
       document.getElementById('modalLogin').classList.add('mostrar');
+    }
+
+    // Función para cerrar el modal de login
+    function cerrarModal() {
+      document.getElementById('modalLogin').classList.remove('mostrar');
     }
   </script>
 </body>
