@@ -15,151 +15,278 @@
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
+  <!-- Cargar script de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
     body {
       margin: 0;
       background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
-      padding: 20px;
+      overflow: hidden;
     }
-    .form-container {
-      max-width: 400px;
-      margin: auto;
+    .slide {
+      height: 100vh;
+      width: 100vw;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      color: #fff;
+      position: absolute;
+      transition: transform 0.5s ease-in-out;
+    }
+    .slide1 { background-image: url('imagenes/slide6.jpeg'); z-index: 3; }
+    .slide2 { background-image: url('imagenes/slide5.png'); z-index: 2; }
+    .slide3 { background-image: url('imagenes/slide4.jpg'); z-index: 1; }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      margin: 0 5px;
+      border-radius: 50%;
+      background-color: #ccc;
+      transition: background-color 0.3s;
+    }
+
+    .dot.active {
+      background-color: #28a745;
+    }
+
+    /* LOGIN FULLSCREEN con animación */
+    #modalLogin {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
-      background: #f9f9f9;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    #modalLogin.mostrar {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #modalLogin .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      color: #fff;
     }
-    .form-container h2 {
-      text-align: center;
-      margin-bottom: 20px;
+
+    #modalLogin input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
     }
+
+    #modalLogin h4 {
+      margin-bottom: 30px;
+    }
+
     .btn-green {
       background-color: #28a745;
-      color: white;
-      font-weight: bold;
+      color: #fff;
       border-radius: 30px;
+      font-weight: bold;
       padding: 12px;
       border: none;
       width: 100%;
     }
-    .toggle-link {
-      text-align: center;
-      color: #ccc;
+
+    .cerrar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
       cursor: pointer;
+      color: #fff;
+    }
+
+    .ver-pass {
+      position: absolute;
+      right: 15px;
+      top: 9px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .input-group {
+      position: relative;
     }
   </style>
 </head>
 <body>
 
-  <!-- Formulario de Login -->
-  <div id="login-form" class="form-container">
-    <h2>Iniciar sesión</h2>
-    <form id="formLogin" onsubmit="return validarLogin(event)">
+  <div id="slidesContainer">
+    <div class="slide slide1">
+      <div>
+        <h2>Conoce qué comes</h2>
+        <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide slide2">
+      <div>
+        <h2>Vive de forma saludable</h2>
+        <p>Planifica tu alimentación y siéntete genial día a día.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide slide3">
+      <div>
+        <h2>Tu nutrición, en tus manos</h2>
+        <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot active"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="modalLogin">
+    <div class="cerrar" onclick="cerrarModal()">✕</div>
+    <h4>Inicia sesión</h4>
+    <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
       <div class="form-group">
-        <label for="email">Correo electrónico</label>
+        <label>Correo electrónico</label>
         <input type="email" class="form-control" id="email" required>
       </div>
       <div class="form-group input-group">
-        <label for="password">Contraseña</label>
+        <label>Contraseña</label>
         <input type="password" class="form-control" id="password" required>
         <span class="ver-pass" onclick="togglePassword()">👁️</span>
       </div>
-      <button type="submit" class="btn-green">Iniciar sesión</button>
-      <div class="toggle-link mt-2" onclick="toggleForm()">¿No tienes cuenta? Regístrate</div>
+      <button type="submit" class="btn-green">Inicia sesión</button>
+      <div class="text-center mt-3">
+        <small>¿Se te ha olvidado tu contraseña?</small>
+      </div>
     </form>
-  </div>
-
-  <!-- Formulario de Registro -->
-  <div id="register-form" class="form-container" style="display: none;">
-    <h2>Registrarse</h2>
-    <form id="formRegister" onsubmit="return registrarUsuario(event)">
+    <form onsubmit="return registrarUsuario(event)" id="formRegistro" style="width: 100%; max-width: 350px; display:none;">
       <div class="form-group">
-        <label for="registerNombre">Nombre completo</label>
-        <input type="text" class="form-control" id="registerNombre" required>
+        <label>Nombre completo</label>
+        <input type="text" class="form-control" id="registroNombre" required>
       </div>
       <div class="form-group">
-        <label for="registerEmail">Correo electrónico</label>
-        <input type="email" class="form-control" id="registerEmail" required>
+        <label>Edad</label>
+        <input type="number" class="form-control" id="registroEdad">
       </div>
       <div class="form-group">
-        <label for="registerPassword">Contraseña</label>
-        <input type="password" class="form-control" id="registerPassword" required>
+        <label>Correo electrónico</label>
+        <input type="email" class="form-control" id="registroEmail" required>
+      </div>
+      <div class="form-group input-group">
+        <label>Contraseña</label>
+        <input type="password" class="form-control" id="registroPassword" required>
+        <span class="ver-pass" onclick="togglePassword()">👁️</span>
       </div>
       <button type="submit" class="btn-green">Registrarse</button>
-      <div class="toggle-link mt-2" onclick="toggleForm()">¿Ya tienes cuenta? Inicia sesión</div>
     </form>
+    <div class="toggle-link text-center text-light mt-2" onclick="toggleForm()">
+      ¿No tienes cuenta? Regístrate
+    </div>
   </div>
 
   <script>
-    // Inicialización de Supabase
-    const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // Supabase initialization
+    const supabase = supabase.createClient(
+      'https://djbuwtemavldytssbicb.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
+    );
 
-    // Función para manejar el login
+    // Login validation
     async function validarLogin(event) {
       event.preventDefault();
-
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-
-      // Verificar usuario en Supabase
+      
       const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', email)
-        .eq('password', password)
-        .single();
+        .from("usuarios")
+        .select("*")
+        .eq("email", email)
+        .eq("password", password)
+        .maybeSingle();
 
       if (error || !data) {
         alert("Usuario o contraseña incorrectos");
       } else {
-        // Guardar datos del usuario en localStorage y redirigir
         localStorage.setItem("usuario", JSON.stringify(data));
-        window.location.href = "menu.html"; // Redirigir al menú
+        location.href = "menu.html";
       }
     }
 
-    // Función para manejar el registro
+    // User registration
     async function registrarUsuario(event) {
       event.preventDefault();
+      const nombre = document.getElementById("registroNombre").value.trim();
+      const edad = parseInt(document.getElementById("registroEdad").value);
+      const email = document.getElementById("registroEmail").value.trim();
+      const password = document.getElementById("registroPassword").value.trim();
 
-      const nombre = document.getElementById("registerNombre").value.trim();
-      const email = document.getElementById("registerEmail").value.trim();
-      const password = document.getElementById("registerPassword").value.trim();
-
-      // Insertar usuario en Supabase
       const { data, error } = await supabase.from("usuarios").insert([
-        { email, password, nombre }
+        { email, password, nombre, edad }
       ]);
 
       if (error) {
         alert("Error al registrar: " + error.message);
       } else {
-        alert("¡Registrado exitosamente! Ahora puedes iniciar sesión.");
-        toggleForm(); // Cambiar al formulario de login
+        alert("Registrado exitosamente. Ya puedes iniciar sesión.");
+        toggleForm();
       }
     }
 
-    // Función para mostrar u ocultar las contraseñas
+    // Toggle password visibility
     function togglePassword() {
-      const passwordFields = document.querySelectorAll('input[type="password"]');
-      passwordFields.forEach(field => {
-        field.type = field.type === 'password' ? 'text' : 'password';
+      const inputs = document.querySelectorAll('input[type="password"]');
+      inputs.forEach(input => {
+        input.type = input.type === 'password' ? 'text' : 'password';
       });
     }
 
-    // Función para alternar entre el formulario de login y registro
+    // Toggle between login and registration forms
     function toggleForm() {
-      const loginForm = document.getElementById('login-form');
-      const registerForm = document.getElementById('register-form');
-
-      loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
-      registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+      const loginForm = document.getElementById('modalLogin');
+      const registroForm = document.getElementById('formRegistro');
+      const isLogin = loginForm.style.display !== 'none';
+      loginForm.style.display = isLogin ? 'none' : 'block';
+      registroForm.style.display = isLogin ? 'block' : 'none';
     }
   </script>
+
 </body>
 </html>
