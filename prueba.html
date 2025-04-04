@@ -3,60 +3,97 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Perfil</title>
+  <title>Registro con perfiles</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 500px;
+      max-width: 400px;
       margin: 40px auto;
       padding: 20px;
       border: 1px solid #ccc;
       border-radius: 12px;
       background-color: #f9f9f9;
     }
-    h2 {
-      color: #28a745;
+    label, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
     }
-    #resultado {
-      margin-top: 20px;
-      background: #fff;
-      padding: 15px;
+    button {
+      padding: 10px;
+      background-color: #28a745;
+      color: white;
+      border: none;
       border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    pre {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <h2>Perfil del Usuario</h2>
-  <div id="resultado">Cargando datos...</div>
+  <h2>Registro de usuario</h2>
+  <form onsubmit="return registrarUsuario(event)">
+    <label>Email:</label>
+    <input type="email" id="email" required>
+    <label>Contraseña:</label>
+    <input type="password" id="password" required>
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required>
+    <label>Edad:</label>
+    <input type="number" id="edad" required>
+    <button type="submit">Registrarse</button>
+  </form>
+
+  <h3>Consola:</h3>
+  <pre id="consola"></pre>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', function () {
+      const consola = document.getElementById("consola");
       const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
       const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
       const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
-        document.getElementById("resultado").innerText = "No has iniciado sesión.";
-        return;
-      }
+      window.registrarUsuario = async function (e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const nombre = document.getElementById("nombre").value.trim();
+        const edad = parseInt(document.getElementById("edad").value);
 
-      const { data: perfil, error: perfilError } = await supabase
-        .from("perfiles")
-        .select("nombre, edad, fecha_registro")
-        .eq("id", userData.user.id)
-        .single();
+        consola.textContent += `Intentando registrar: ${email}\n`;
 
-      if (perfilError) {
-        document.getElementById("resultado").innerText = "Error al obtener los datos.";
-      } else {
-        document.getElementById("resultado").innerHTML = `
-          <p><strong>Nombre:</strong> ${perfil.nombre}</p>
-          <p><strong>Edad:</strong> ${perfil.edad}</p>
-          <p><strong>Registrado el:</strong> ${new Date(perfil.fecha_registro).toLocaleString()}</p>
-        `;
+        if (!email || !password || !nombre || isNaN(edad)) {
+          consola.textContent += `❌ Campos vacíos o incorrectos\n`;
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        consola.textContent += `➡️ Resultado signUp:\n` + JSON.stringify({ data, error }, null, 2) + "\n";
+
+        if (error || !data.user) {
+          consola.textContent += `❌ Error al registrar usuario\n`;
+          return;
+        }
+
+        const insert = await supabase.from("perfiles").insert([
+          { id: data.user.id, nombre, edad }
+        ]);
+
+        consola.textContent += `✅ Resultado insert:\n` + JSON.stringify(insert, null, 2) + "\n";
+
+        if (insert.error) {
+          consola.textContent += `❌ Error al insertar en perfiles\n`;
+        } else {
+          consola.textContent += `🎉 ¡Registrado exitosamente!\n`;
+        }
       }
     });
   </script>
