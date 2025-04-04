@@ -6,9 +6,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
-  <title>Nutrición-APP</title>
 
+  <!-- Manifest e íconos PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="imagenes/icono.ico">
+  <link rel="icon" type="image/png" href="imagenes/icono.png">
+
+  <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
 
   <style>
@@ -88,7 +94,7 @@
   </div>
 
   <script>
-    // Inicializar Supabase
+    // Inicialización de Supabase
     const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
