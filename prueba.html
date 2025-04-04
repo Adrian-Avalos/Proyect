@@ -22,7 +22,81 @@
       font-family: 'Helvetica Neue', sans-serif;
       overflow: hidden;
     }
-    /* Resto de estilos anteriores... */
+    .slide {
+      height: 100vh;
+      width: 100vw;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 30px;
+      color: #fff;
+      position: absolute;
+      transition: transform 0.5s ease-in-out;
+    }
+    .slide1 { background-image: url('imagenes/slide6.jpeg'); z-index: 3; }
+    .slide2 { background-image: url('imagenes/slide5.png'); z-index: 2; }
+    .slide3 { background-image: url('imagenes/slide4.jpg'); z-index: 1; }
+    .slide h2 { font-size: 28px; font-weight: bold; }
+    .slide p { font-size: 16px; margin-top: 10px; }
+    .slide-buttons { margin-top: 25px; display: flex; justify-content: center; }
+    .btn-slide { margin: 0 10px; padding: 12px 24px; font-weight: bold; border-radius: 30px; border: none; }
+    .dots { display: flex; justify-content: center; margin-top: 15px; }
+    .dot { width: 10px; height: 10px; margin: 0 5px; border-radius: 50%; background-color: #ccc; transition: background-color 0.3s; }
+    .dot.active { background-color: #28a745; }
+    #modalLogin {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    #modalLogin.mostrar {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #modalLogin .form-control {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+    }
+    #modalLogin input::placeholder { color: rgba(255, 255, 255, 0.7); }
+    #modalLogin h4 { margin-bottom: 30px; }
+    .btn-green {
+      background-color: #28a745;
+      color: #fff;
+      border-radius: 30px;
+      font-weight: bold;
+      padding: 12px;
+      border: none;
+      width: 100%;
+    }
+    .cerrar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .ver-pass {
+      position: absolute;
+      right: 15px;
+      top: 9px;
+      cursor: pointer;
+      color: #ccc;
+    }
+    .input-group { position: relative; }
     .toggle-link {
       text-align: center;
       margin-top: 10px;
@@ -32,12 +106,52 @@
   </style>
 </head>
 <body>
-  <!-- SLIDES -->
   <div id="slidesContainer">
-    <!-- ... slides ... -->
+    <div class="slide slide1">
+      <div>
+        <h2>Conoce qué comes</h2>
+        <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+    <div class="slide slide2">
+      <div>
+        <h2>Vive de forma saludable</h2>
+        <p>Planifica tu alimentación y siéntete genial día a día.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+    <div class="slide slide3">
+      <div>
+        <h2>Tu nutrición, en tus manos</h2>
+        <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot active"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN / REGISTRO -->
   <div id="modalLogin">
     <div class="cerrar" onclick="cerrarModal()">✕</div>
     <h4 id="formTitulo">Inicia sesión</h4>
@@ -90,9 +204,7 @@
       event.preventDefault();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
       if (error) {
         alert("Usuario o contraseña incorrectos: " + error.message);
       } else {
@@ -106,15 +218,11 @@
       const edad = parseInt(document.getElementById("registroEdad").value);
       const email = document.getElementById("registroEmail").value.trim();
       const password = document.getElementById("registroPassword").value.trim();
-
       const { data, error } = await supabase.auth.signUp({ email, password });
-
       if (error) {
         alert("Error al registrar: " + error.message);
       } else {
-        await supabase.from("perfiles").insert([
-          { id: data.user.id, nombre, edad }
-        ]);
+        await supabase.from("perfiles").insert([{ id: data.user.id, nombre, edad }]);
         alert("¡Cuenta creada! Ya puedes iniciar sesión.");
         toggleForm();
       }
@@ -132,18 +240,11 @@
       const registroForm = document.getElementById('formRegistro');
       const titulo = document.getElementById('formTitulo');
       const toggleText = document.querySelector('.toggle-link');
-
-      if (loginForm.style.display === 'none') {
-        loginForm.style.display = 'block';
-        registroForm.style.display = 'none';
-        titulo.innerText = 'Inicia sesión';
-        toggleText.innerText = '¿No tienes cuenta? Regístrate';
-      } else {
-        loginForm.style.display = 'none';
-        registroForm.style.display = 'block';
-        titulo.innerText = 'Crea tu cuenta';
-        toggleText.innerText = '¿Ya tienes cuenta? Inicia sesión';
-      }
+      const isLogin = loginForm.style.display !== 'none';
+      loginForm.style.display = isLogin ? 'none' : 'block';
+      registroForm.style.display = isLogin ? 'block' : 'none';
+      titulo.innerText = isLogin ? 'Crea tu cuenta' : 'Inicia sesión';
+      toggleText.innerText = isLogin ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate';
     }
 
     function irLogin() {
@@ -153,6 +254,24 @@
     function cerrarModal() {
       document.getElementById('modalLogin').classList.remove('mostrar');
     }
+
+    // Slides automáticos
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.style.transform = `translateX(${(i - index) * 100}%)`;
+        dots[i].classList.toggle('active', i === index);
+      });
+      currentSlide = index;
+    }
+    function autoSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+    setInterval(autoSlide, 6000);
+    showSlide(0);
   </script>
 </body>
 </html>
