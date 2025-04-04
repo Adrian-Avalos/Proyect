@@ -142,15 +142,15 @@
   </div>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://djbuwtemavldytssbicb.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
-    );
+    const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     async function validarLogin(event) {
       event.preventDefault();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
+
       const { data, error } = await supabase
         .from("usuarios")
         .select("*")
