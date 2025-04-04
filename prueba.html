@@ -7,14 +7,26 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
 
-  <title>Nutrición-APP</title>
+  <!-- Manifest e íconos PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="imagenes/icono.ico">
+  <link rel="icon" type="image/png" href="imagenes/icono.png">
 
+  <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
 
   <style>
-    /* Agregar los estilos que ya tenías */
     body {
       margin: 0;
       background-color: #fff;
@@ -59,6 +71,10 @@
       border-radius: 30px;
       border: none;
     }
+
+    .slide1 { background-image: url('imagenes/slide6.jpeg'); z-index: 3; }
+    .slide2 { background-image: url('imagenes/slide5.png'); z-index: 2; }
+    .slide3 { background-image: url('imagenes/slide4.jpg'); z-index: 1; }
 
     .dots {
       display: flex;
@@ -149,6 +165,7 @@
   </style>
 </head>
 <body>
+
 
   <!-- SLIDES -->
   <div id="slidesContainer">
