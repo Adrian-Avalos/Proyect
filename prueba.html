@@ -14,6 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
+    /* Agregar los estilos que ya tenías */
     body {
       margin: 0;
       background-color: #fff;
@@ -200,8 +201,8 @@
   <!-- LOGIN -->
   <div id="modalLogin">
     <div class="cerrar" onclick="cerrarModal()">✕</div>
-    <h4>Inicia sesión</h4>
-    <form id="formLogin" onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
+    <h4 id="formTitulo">Inicia sesión</h4>
+    <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
       <div class="form-group">
         <label>Correo electrónico</label>
         <input type="email" class="form-control" id="email" required>
@@ -239,7 +240,7 @@
   </div>
 
   <script>
-    // Inicializa Supabase
+    // Inicialización de Supabase
     const supabase = supabase.createClient(
       'https://djbuwtemavldytssbicb.supabase.co', 
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
