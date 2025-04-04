@@ -29,9 +29,15 @@ self.addEventListener("activate", event => {
   );
 });
 
-// Sirve siempre desde caché
+// Manejo de requests con fallback a index.html
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+    fetch(event.request)
+      .then(networkResponse => networkResponse)
+      .catch(() => {
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || caches.match("index.html");
+        });
+      })
   );
 });
