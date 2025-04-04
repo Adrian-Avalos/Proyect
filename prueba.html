@@ -9,6 +9,18 @@
 
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
 
   <style>
@@ -142,74 +154,77 @@
   </div>
 
   <script>
-    const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // Asegurándonos de que el script de supabase esté cargado antes de inicializar el cliente supabase
+    window.onload = () => {
+      const supabase = supabase.createClient(
+        'https://djbuwtemavldytssbicb.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
+      );
 
-    async function validarLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+      async function validarLogin(event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
 
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .maybeSingle();
+        const { data, error } = await supabase
+          .from("usuarios")
+          .select("*")
+          .eq("email", email)
+          .eq("password", password)
+          .maybeSingle();
 
-      if (error || !data) {
-        alert("Usuario o contraseña incorrectos");
-      } else {
-        localStorage.setItem("usuario", JSON.stringify(data));
-        location.href = "menu.html";
+        if (error || !data) {
+          alert("Usuario o contraseña incorrectos");
+        } else {
+          localStorage.setItem("usuario", JSON.stringify(data));
+          location.href = "menu.html";
+        }
       }
-    }
 
-    async function registrarUsuario(event) {
-      event.preventDefault();
-      const nombre = document.getElementById("registroNombre").value.trim();
-      const edad = parseInt(document.getElementById("registroEdad").value);
-      const email = document.getElementById("registroEmail").value.trim();
-      const password = document.getElementById("registroPassword").value.trim();
+      async function registrarUsuario(event) {
+        event.preventDefault();
+        const nombre = document.getElementById("registroNombre").value.trim();
+        const edad = parseInt(document.getElementById("registroEdad").value);
+        const email = document.getElementById("registroEmail").value.trim();
+        const password = document.getElementById("registroPassword").value.trim();
 
-      const { data, error } = await supabase.from("usuarios").insert([
-        { email, password, nombre, edad }
-      ]);
+        const { data, error } = await supabase.from("usuarios").insert([
+          { email, password, nombre, edad }
+        ]);
 
-      if (error) {
-        alert("Error al registrar: " + error.message);
-      } else {
-        alert("Registrado exitosamente. Ya puedes iniciar sesión.");
-        toggleForm();
+        if (error) {
+          alert("Error al registrar: " + error.message);
+        } else {
+          alert("Registrado exitosamente. Ya puedes iniciar sesión.");
+          toggleForm();
+        }
       }
-    }
 
-    function togglePassword() {
-      const inputs = document.querySelectorAll('input[type="password"]');
-      inputs.forEach(input => {
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
-    }
+      function togglePassword() {
+        const inputs = document.querySelectorAll('input[type="password"]');
+        inputs.forEach(input => {
+          input.type = input.type === 'password' ? 'text' : 'password';
+        });
+      }
 
-    function toggleForm() {
-      const loginForm = document.getElementById('formLogin');
-      const registroForm = document.getElementById('formRegistro');
-      const titulo = document.getElementById('formTitulo');
-      const isLogin = loginForm.style.display !== 'none';
-      loginForm.style.display = isLogin ? 'none' : 'block';
-      registroForm.style.display = isLogin ? 'block' : 'none';
-      titulo.innerText = isLogin ? 'Crea tu cuenta' : 'Inicia sesión';
-    }
+      function toggleForm() {
+        const loginForm = document.getElementById('formLogin');
+        const registroForm = document.getElementById('formRegistro');
+        const titulo = document.getElementById('formTitulo');
+        const isLogin = loginForm.style.display !== 'none';
+        loginForm.style.display = isLogin ? 'none' : 'block';
+        registroForm.style.display = isLogin ? 'block' : 'none';
+        titulo.innerText = isLogin ? 'Crea tu cuenta' : 'Inicia sesión';
+      }
 
-    function irLogin() {
-      document.getElementById('modalLogin').classList.add('mostrar');
-    }
+      function irLogin() {
+        document.getElementById('modalLogin').classList.add('mostrar');
+      }
 
-    function cerrarModal() {
-      document.getElementById('modalLogin').classList.remove('mostrar');
-    }
+      function cerrarModal() {
+        document.getElementById('modalLogin').classList.remove('mostrar');
+      }
+    };
   </script>
-
 </body>
 </html>
