@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro con perfiles</title>
+  <title>Registro manual</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
   <style>
     body {
@@ -22,7 +22,7 @@
     }
     button {
       padding: 10px;
-      background-color: #28a745;
+      background-color: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
@@ -38,7 +38,7 @@
   </style>
 </head>
 <body>
-  <h2>Registro de usuario</h2>
+  <h2>Registro manual (sin auth)</h2>
   <form onsubmit="return registrarUsuario(event)">
     <label>Email:</label>
     <input type="email" id="email" required>
@@ -68,31 +68,16 @@
         const nombre = document.getElementById("nombre").value.trim();
         const edad = parseInt(document.getElementById("edad").value);
 
-        consola.textContent += `Intentando registrar: ${email}\n`;
+        consola.textContent += `Registrando: ${email}\n`;
 
-        if (!email || !password || !nombre || isNaN(edad)) {
-          consola.textContent += `❌ Campos vacíos o incorrectos\n`;
-          return;
-        }
-
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        consola.textContent += `➡️ Resultado signUp:\n` + JSON.stringify({ data, error }, null, 2) + "\n";
-
-        if (error || !data.user) {
-          consola.textContent += `❌ Error al registrar usuario\n`;
-          return;
-        }
-
-        const insert = await supabase.from("perfiles").insert([
-          { id: data.user.id, nombre, edad }
+        const { data, error } = await supabase.from("usuarios").insert([
+          { email, password, nombre, edad }
         ]);
 
-        consola.textContent += `✅ Resultado insert:\n` + JSON.stringify(insert, null, 2) + "\n";
-
-        if (insert.error) {
-          consola.textContent += `❌ Error al insertar en perfiles\n`;
+        if (error) {
+          consola.textContent += `❌ Error: ` + error.message + "\n";
         } else {
-          consola.textContent += `🎉 ¡Registrado exitosamente!\n`;
+          consola.textContent += `🎉 Usuario registrado correctamente\n`;
         }
       }
     });
