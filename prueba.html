@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#28a745">
-  <title>Nutrición-APP</title>
+  <title>Login - Nutrición-APP</title>
 
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
@@ -18,34 +18,26 @@
       margin: 0;
       background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
-    }
-
-    #modalLogin {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 9999;
-      color: #fff;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
+      height: 100vh;
     }
 
-    #modalLogin.mostrar {
-      opacity: 1;
-      pointer-events: auto;
+    .login-container {
+      width: 100%;
+      max-width: 350px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .form-control {
       background: rgba(255, 255, 255, 0.1);
       border: none;
       border-radius: 10px;
-      color: #fff;
+      color: #333;
     }
 
     .btn-green {
@@ -57,40 +49,28 @@
       border: none;
       width: 100%;
     }
+
+    .btn-link {
+      color: #28a745;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Modal Login -->
-  <div id="modalLogin">
-    <h4>Inicia sesión</h4>
-    <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
+  <div class="login-container">
+    <h2 class="text-center">Inicia sesión</h2>
+    <form id="loginForm">
       <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" class="form-control" id="email" required placeholder="Correo electrónico">
+        <label for="email">Correo electrónico</label>
+        <input type="email" class="form-control" id="email" placeholder="Correo electrónico" required>
       </div>
-      <div class="form-group input-group">
-        <label>Contraseña</label>
-        <input type="password" class="form-control" id="password" required placeholder="Contraseña">
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" class="form-control" id="password" placeholder="Contraseña" required>
       </div>
-      <button type="submit" class="btn-green">Inicia sesión</button>
+      <button type="submit" class="btn-green">Iniciar sesión</button>
     </form>
-
-    <form onsubmit="return registrarUsuario(event)" style="width: 100%; max-width: 350px; display:none;" id="formRegistro">
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" class="form-control" id="registroNombre" required>
-      </div>
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" class="form-control" id="registroEmail" required>
-      </div>
-      <div class="form-group input-group">
-        <label>Contraseña</label>
-        <input type="password" class="form-control" id="registroPassword" required>
-      </div>
-      <button type="submit" class="btn-green">Registrarse</button>
-    </form>
+    <p class="text-center mt-3">¿No tienes cuenta? <a href="#" id="link-register" class="btn-link">Regístrate</a></p>
   </div>
 
   <script>
@@ -99,67 +79,34 @@
     const supabaseKey = 'YOUR_SUPABASE_KEY'; // Cambia esto con tu clave
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Función para validar el login
-    async function validarLogin(event) {
-      event.preventDefault();
+    // Función para manejar el inicio de sesión
+    async function loginUser(event) {
+      event.preventDefault(); // Prevenir la recarga de la página
+
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      const { data, error } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', email)
-        .eq('password', password)
-        .single();
-
-      if (error || !data) {
-        alert("Usuario o contraseña incorrectos");
-      } else {
-        localStorage.setItem("usuario", JSON.stringify(data));
-        window.location.href = "menu.html";  // Redirige al menú si la autenticación es exitosa
-      }
-    }
-
-    // Función para registrar un usuario
-    async function registrarUsuario(event) {
-      event.preventDefault();
-      const nombre = document.getElementById("registroNombre").value.trim();
-      const email = document.getElementById("registroEmail").value.trim();
-      const password = document.getElementById("registroPassword").value.trim();
-
-      const { data, error } = await supabase
-        .from('usuarios')
-        .insert([
-          { email, password, nombre }
-        ]);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        alert("Error al registrar: " + error.message);
+        alert("Error al iniciar sesión: " + error.message);
       } else {
-        alert("Registrado exitosamente, ahora puedes iniciar sesión.");
-        toggleForm();  // Cambia al formulario de login después de registrar
+        // Guardar la información del usuario en el almacenamiento local
+        localStorage.setItem("usuario", JSON.stringify(data.user));
+
+        // Redirigir a la página de menú
+        window.location.href = "menu.html";
       }
     }
 
-    // Función para cambiar entre el formulario de login y registro
-    function toggleForm() {
-      const loginForm = document.querySelector('form#modalLogin form');
-      const registerForm = document.getElementById('formRegistro');
-      const isLogin = loginForm.style.display !== 'none';
+    // Asignar evento al formulario de inicio de sesión
+    document.getElementById("loginForm").addEventListener("submit", loginUser);
 
-      loginForm.style.display = isLogin ? 'none' : 'block';
-      registerForm.style.display = isLogin ? 'block' : 'none';
-    }
-
-    // Función para mostrar el modal de login
-    function irLogin() {
-      document.getElementById('modalLogin').classList.add('mostrar');
-    }
-
-    // Función para cerrar el modal de login
-    function cerrarModal() {
-      document.getElementById('modalLogin').classList.remove('mostrar');
-    }
+    // Función para manejar el registro
+    document.getElementById("link-register").addEventListener("click", () => {
+      window.location.href = "registro.html"; // Cambia esto por la URL de tu página de registro
+    });
   </script>
+
 </body>
 </html>
