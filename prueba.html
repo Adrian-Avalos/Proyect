@@ -2,282 +2,100 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#28a745">
-  <title>Nutrición-APP</title>
-
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="imagenes/icono.ico">
-  <link rel="icon" type="image/png" href="imagenes/icono.png">
-
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro con perfiles</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js" defer></script>
-
   <style>
     body {
-      margin: 0;
-      background-color: #fff;
-      font-family: 'Helvetica Neue', sans-serif;
-      overflow: hidden;
-    }
-    .slide {
-      height: 100vh;
-      width: 100vw;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 30px;
-      color: #fff;
-      position: absolute;
-      transition: transform 0.5s ease-in-out;
-    }
-    .slide1 { background-image: url('imagenes/slide6.jpeg'); z-index: 3; }
-    .slide2 { background-image: url('imagenes/slide5.png'); z-index: 2; }
-    .slide3 { background-image: url('imagenes/slide4.jpg'); z-index: 1; }
-    .slide h2 { font-size: 28px; font-weight: bold; }
-    .slide p { font-size: 16px; margin-top: 10px; }
-    .slide-buttons { margin-top: 25px; display: flex; justify-content: center; }
-    .btn-slide { margin: 0 10px; padding: 12px 24px; font-weight: bold; border-radius: 30px; border: none; }
-    .dots { display: flex; justify-content: center; margin-top: 15px; }
-    .dot { width: 10px; height: 10px; margin: 0 5px; border-radius: 50%; background-color: #ccc; transition: background-color 0.3s; }
-    .dot.active { background-color: #28a745; }
-    #modalLogin {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 9999;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
       padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background-color: #f9f9f9;
     }
-    #modalLogin.mostrar {
-      opacity: 1;
-      pointer-events: auto;
+    label, input {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
     }
-    #modalLogin .form-control {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 10px;
-      color: #fff;
-    }
-    #modalLogin input::placeholder { color: rgba(255, 255, 255, 0.7); }
-    #modalLogin h4 { margin-bottom: 30px; }
-    .btn-green {
+    button {
+      padding: 10px;
       background-color: #28a745;
-      color: #fff;
-      border-radius: 30px;
-      font-weight: bold;
-      padding: 12px;
+      color: white;
       border: none;
+      border-radius: 8px;
       width: 100%;
     }
-    .cerrar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 30px;
-      cursor: pointer;
-      color: #fff;
-    }
-    .ver-pass {
-      position: absolute;
-      right: 15px;
-      top: 9px;
-      cursor: pointer;
-      color: #ccc;
-    }
-    .input-group { position: relative; }
-    .toggle-link {
-      text-align: center;
-      margin-top: 10px;
-      color: #ccc;
-      cursor: pointer;
+    pre {
+      background: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 200px;
+      overflow-y: auto;
     }
   </style>
 </head>
 <body>
-  <div id="slidesContainer">
-    <div class="slide slide1">
-      <div>
-        <h2>Conoce qué comes</h2>
-        <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
-        <div class="dots">
-          <div class="dot active"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
-        <div class="slide-buttons">
-          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
-        </div>
-      </div>
-    </div>
-    <div class="slide slide2">
-      <div>
-        <h2>Vive de forma saludable</h2>
-        <p>Planifica tu alimentación y siéntete genial día a día.</p>
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot active"></div>
-          <div class="dot"></div>
-        </div>
-        <div class="slide-buttons">
-          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
-        </div>
-      </div>
-    </div>
-    <div class="slide slide3">
-      <div>
-        <h2>Tu nutrición, en tus manos</h2>
-        <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot active"></div>
-        </div>
-        <div class="slide-buttons">
-          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <h2>Registro de usuario</h2>
+  <form onsubmit="return registrarUsuario(event)">
+    <label>Email:</label>
+    <input type="email" id="email" required>
+    <label>Contraseña:</label>
+    <input type="password" id="password" required>
+    <label>Nombre:</label>
+    <input type="text" id="nombre" required>
+    <label>Edad:</label>
+    <input type="number" id="edad" required>
+    <button type="submit">Registrarse</button>
+  </form>
 
-  <!-- LOGIN / REGISTRO -->
-    <!-- LOGIN -->
-  <div id="modalLogin">
-    <div class="cerrar" onclick="cerrarModal()">✕</div>
-    <h4 id="formTitulo">Inicia sesión</h4>
-    <form onsubmit="return validarLogin(event)" id="formLogin" style="width: 100%; max-width: 350px;">
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" class="form-control" id="email" required>
-      </div>
-      <div class="form-group input-group">
-        <label>Contraseña</label>
-        <input type="password" class="form-control" id="password" required>
-        <span class="ver-pass" onclick="togglePassword()">👁️</span>
-      </div>
-      <button type="submit" class="btn-green">Inicia sesión</button>
-    </form>
-    <form onsubmit="return registrarUsuario(event)" id="formRegistro" style="width: 100%; max-width: 350px; display:none;">
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" class="form-control" id="registroNombre" required>
-      </div>
-      <div class="form-group">
-        <label>Edad</label>
-        <input type="number" class="form-control" id="registroEdad">
-      </div>
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" class="form-control" id="registroEmail" required>
-      </div>
-      <div class="form-group input-group">
-        <label>Contraseña</label>
-        <input type="password" class="form-control" id="registroPassword" required>
-        <span class="ver-pass" onclick="togglePassword()">👁️</span>
-      </div>
-      <button type="submit" class="btn-green">Registrarse</button>
-    </form>
-    <div class="toggle-link text-center text-light mt-2" onclick="toggleForm()">
-      ¿No tienes cuenta? Regístrate
-    </div>
-  </div>
+  <h3>Consola:</h3>
+  <pre id="consola"></pre>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://djbuwtemavldytssbicb.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
-    );
+    document.addEventListener('DOMContentLoaded', function () {
+      const consola = document.getElementById("consola");
+      const supabaseUrl = 'https://djbuwtemavldytssbicb.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function validarLogin(event) {
-      event.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const { data, error } = await supabase
-        .from("usuarios")
-        .select("*")
-        .eq("email", email)
-        .eq("password", password)
-        .maybeSingle();
+      window.registrarUsuario = async function (e) {
+        e.preventDefault();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const nombre = document.getElementById("nombre").value.trim();
+        const edad = parseInt(document.getElementById("edad").value);
 
-      if (error || !data) {
-        alert("Usuario o contraseña incorrectos");
-      } else {
-        localStorage.setItem("usuario", JSON.stringify(data));
-        location.href = "menu.html";
+        consola.textContent += `Intentando registrar: ${email}\n`;
+
+        if (!email || !password || !nombre || isNaN(edad)) {
+          consola.textContent += `❌ Campos vacíos o incorrectos\n`;
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        consola.textContent += `➡️ Resultado signUp:\n` + JSON.stringify({ data, error }, null, 2) + "\n";
+
+        if (error || !data.user) {
+          consola.textContent += `❌ Error al registrar usuario\n`;
+          return;
+        }
+
+        const insert = await supabase.from("perfiles").insert([
+          { id: data.user.id, nombre, edad }
+        ]);
+
+        consola.textContent += `✅ Resultado insert:\n` + JSON.stringify(insert, null, 2) + "\n";
+
+        if (insert.error) {
+          consola.textContent += `❌ Error al insertar en perfiles\n`;
+        } else {
+          consola.textContent += `🎉 ¡Registrado exitosamente!\n`;
+        }
       }
-    }
-
-    async function registrarUsuario(event) {
-      event.preventDefault();
-      const nombre = document.getElementById("registroNombre").value.trim();
-      const edad = parseInt(document.getElementById("registroEdad").value);
-      const email = document.getElementById("registroEmail").value.trim();
-      const password = document.getElementById("registroPassword").value.trim();
-
-      const { data, error } = await supabase.from("usuarios").insert([
-        { email, password, nombre, edad }
-      ]);
-
-      if (error) {
-        alert("Error al registrar: " + error.message);
-      } else {
-        alert("Registrado exitosamente. Ya puedes iniciar sesión.");
-        toggleForm();
-      }
-    }
-
-    function togglePassword() {
-      const inputs = document.querySelectorAll('input[type="password"]');
-      inputs.forEach(input => {
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
-    }
-
-    function toggleForm() {
-      const loginForm = document.getElementById('formLogin');
-      const registroForm = document.getElementById('formRegistro');
-      const titulo = document.getElementById('formTitulo');
-      const toggleText = document.querySelector('.toggle-link');
-      const isLogin = loginForm.style.display !== 'none';
-      loginForm.style.display = isLogin ? 'none' : 'block';
-      registroForm.style.display = isLogin ? 'block' : 'none';
-      titulo.innerText = isLogin ? 'Crea tu cuenta' : 'Inicia sesión';
-      toggleText.innerText = isLogin ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate';
-    }
-
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-    function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.style.transform = `translateX(${(i - index) * 100}%)`;
-        dots[i].classList.toggle('active', i === index);
-      });
-      currentSlide = index;
-    }
-    function autoSlide() {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
-    }
-    setInterval(autoSlide, 6000);
-    showSlide(0);
-    function irLogin() {
-      document.getElementById('modalLogin').classList.add('mostrar');
-    }
-    function cerrarModal() {
-      document.getElementById('modalLogin').classList.remove('mostrar');
-    }
+    });
   </script>
 </body>
 </html>
