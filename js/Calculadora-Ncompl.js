@@ -1,3 +1,5 @@
+// © 2025 Ramón Adrian Avalos Verá (GitHub: Adrian-Avalos)
+// Prohibida la copia o uso comercial sin autorización.
 let graficoMacros = null;
 
   window.addEventListener('DOMContentLoaded', async () => {
