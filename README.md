@@ -1,6 +1,6 @@
 # Nutrición App
 
-Este proyecto es un sistema de asesoría nutricional en HTML.)
+Este proyecto es un sistema de asesoría nutricional en HTML
 
 ## Autor
 Ramón Adrian Avalos Verá  
