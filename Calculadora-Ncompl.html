@@ -111,13 +111,15 @@
         </select>
       </div>
       <div class="col-md-4">
-        <label class="form-label">Tipo de comida</label>
-        <select id="tipo-comida" class="form-select">
-          <option value="desayuno">Desayuno</option>
-          <option value="almuerzo">Almuerzo</option>
-          <option value="merienda">Merienda</option>
-          <option value="cena">Cena</option>
-        </select>
+      <label class="form-label">Tiempo de comida</label>
+      <select id="tipo-comida" class="form-select">
+        <option value="desayuno">Desayuno</option>
+        <option value="media_manana">Media mañana</option>
+        <option value="almuerzo">Almuerzo</option>
+        <option value="merienda">Merienda</option>
+        <option value="cena">Cena</option>
+        <option value="colacion">Colación</option>
+      </select>
       </div>
       <div class="col-md-3">
         <label class="form-label">Cantidad</label>
@@ -132,11 +134,18 @@
     </div>
     <div id="detalle-alimento" class="row g-2 mt-3"></div>
   </div>
+<div class="text-end mt-3">
+  <button onclick="toggleTodosLosGrupos()" class="btn btn-outline-light btn-sm">Expandir/Colapsar todos</button>
+</div>
 
 <div id="listas-alimentos" class="mt-4">
   <div class="grupo-comida">
     <h3 class="titulo-grupo" onclick="toggleGrupo('desayuno')">🍳 Desayuno</h3>
     <div id="lista-desayuno" class="tabla-comida d-none"></div>
+  </div>
+  <div class="grupo-comida">
+  <h3 class="titulo-grupo" onclick="toggleGrupo('media_manana')">🥤 Media mañana</h3>
+  <div id="lista-media_manana" class="tabla-comida d-none"></div>
   </div>
   <div class="grupo-comida">
     <h3 class="titulo-grupo" onclick="toggleGrupo('almuerzo')">🍽️ Almuerzo</h3>
@@ -150,6 +159,10 @@
     <h3 class="titulo-grupo" onclick="toggleGrupo('cena')">🌙 Cena</h3>
     <div id="lista-cena" class="tabla-comida d-none"></div>
   </div>
+  <div class="grupo-comida">
+  <h3 class="titulo-grupo" onclick="toggleGrupo('colacion')">🍽️ Colación</h3>
+  <div id="lista-colacion" class="tabla-comida d-none"></div>
+</div>
 </div>
 
 <div id="totales" class="text-center fw-bold fs-5"></div>
@@ -181,12 +194,14 @@
     ];
 
     const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
-    let alimentosSeleccionados = {
-        desayuno: [],
-        almuerzo: [],
-        merienda: [],
-        cena: []
-      };
+      let alimentosSeleccionados = {
+      desayuno: [],
+      media_manana: [],
+      almuerzo: [],
+      merienda: [],
+      cena: [],
+      colacion: []
+    };
 
     function convertirANumero(valor) {
       if (!valor) return 0;
@@ -244,44 +259,55 @@
       actualizarTabla(tipo);
     };
 
-       function actualizarTabla(tipo) {
-      const contenedor = document.getElementById(`lista-${tipo}`);
-      contenedor.innerHTML = `
-        <div class="table-responsive">
-          <table class="table table-striped table-bordered">
-            <thead><tr id="header-${tipo}"></tr></thead>
-            <tbody id="body-${tipo}"></tbody>
-          </table>
-        </div>
-      `;
-    
-      const headerRow = document.getElementById(`header-${tipo}`);
-      headerRow.innerHTML = '<th>Acciones</th><th>ALIMENTO</th><th>CANTIDAD</th>';
-      columnas.forEach(col => {
-        const th = document.createElement('th');
-        th.textContent = col.replace(/_/g, ' ').toUpperCase();
-        headerRow.appendChild(th);
-      });
-    
-      const cuerpo = document.getElementById(`body-${tipo}`);
-      alimentosSeleccionados[tipo].forEach((a, i) => {
-        let fila = `<tr>
-          <td>
-            <button class='btn btn-warning btn-sm me-1' onclick='modificarCantidad("${tipo}", ${i})'>✏️</button>
-            <button class='btn btn-danger btn-sm' onclick='eliminarAlimento("${tipo}", ${i})'>❌</button>
-          </td>
-          <td title="${a.alimento}">${a.alimento}</td>
-          <td>${a.cantidad} ${a.unidad}</td>`;
-        columnas.forEach(k => {
-          const valorNumerico = convertirANumero(a[k]) * a.factor;
-          fila += `<td>${isNaN(valorNumerico) ? '-' : valorNumerico.toFixed(1)}</td>`;
+             function actualizarTabla(tipo) {
+        const contenedor = document.getElementById(`lista-${tipo}`);
+        contenedor.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <thead><tr id="header-${tipo}"></tr></thead>
+              <tbody id="body-${tipo}"></tbody>
+            </table>
+          </div>
+        `;
+      
+        const headerRow = document.getElementById(`header-${tipo}`);
+        headerRow.innerHTML = '<th>Acciones</th><th>ALIMENTO</th><th>CANTIDAD</th>';
+        columnas.forEach(col => {
+          const th = document.createElement('th');
+          th.textContent = col.replace(/_/g, ' ').toUpperCase();
+          headerRow.appendChild(th);
         });
-        fila += '</tr>';
-        cuerpo.innerHTML += fila;
-      });
-    
-      calcularTotales(); // Si querés hacer totales generales
-    }
+      
+        const cuerpo = document.getElementById(`body-${tipo}`);
+        alimentosSeleccionados[tipo].forEach((a, i) => {
+          let fila = `<tr>
+            <td>
+              <button class='btn btn-warning btn-sm me-1' onclick='modificarCantidad("${tipo}", ${i})'>✏️</button>
+              <button class='btn btn-danger btn-sm' onclick='eliminarAlimento("${tipo}", ${i})'>❌</button>
+            </td>
+            <td title="${a.alimento}">${a.alimento}</td>
+            <td>${a.cantidad} ${a.unidad}</td>`;
+          columnas.forEach(k => {
+            const valorNumerico = convertirANumero(a[k]) * a.factor;
+            fila += `<td>${isNaN(valorNumerico) ? '-' : valorNumerico.toFixed(1)}</td>`;
+          });
+          fila += '</tr>';
+          cuerpo.innerHTML += fila;
+        });
+      
+        // Subtotal de calorías por grupo
+        let subtotal = { calorias: 0 };
+        alimentosSeleccionados[tipo].forEach(a => {
+          subtotal.calorias += convertirANumero(a.valor_energetico) * a.factor;
+        });
+      
+        // Mostrar debajo de la tabla
+        const resumenHTML = `<div class="text-end fw-bold mt-2">Subtotal: ${subtotal.calorias.toFixed(1)} cal</div>`;
+        contenedor.innerHTML += resumenHTML;
+      
+        calcularTotales(); // Actualiza el total general
+      }
+
 
 
     function calcularTotales() {
@@ -350,6 +376,13 @@
       const div = document.getElementById(`lista-${tipo}`);
       div.classList.toggle('d-none');
     }
+  function toggleTodosLosGrupos() {
+    const grupos = ['desayuno', 'media_manana', 'almuerzo', 'merienda', 'cena', 'colacion'];
+    grupos.forEach(grupo => {
+      const div = document.getElementById(`lista-${grupo}`);
+      div.classList.toggle('d-none');
+    });
+  }
 </script>
 </body>
 </html>
