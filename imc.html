@@ -6,23 +6,16 @@
   <meta name="theme-color" content="#28a745">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Calculadora de IMC</title>
+  <title>Calculadora Nutricional</title>
 
-  <!-- Iconos y estilos -->
+  <!-- Manifest y Service Worker -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="img/icono-192.png">
   <link rel="apple-touch-icon" href="img/icono-180.png">
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body { background-color: #000; color: #fff; padding-bottom: 5rem; }
-    .card { background-color: #111; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
-    .form-control { background-color: #222; border: 1px solid #444; color: #fff; }
-    label, .form-label { margin-top: .5rem; }
-    .volver-btn { position: fixed; bottom: 20px; left: 20px; z-index: 1050; }
-    .chart-container { max-width: 500px; margin: 3rem auto; }
-  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.5/dist/umd/supabase.min.js"></script>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -33,23 +26,56 @@
       });
     }
   </script>
+
+  <!-- Estilos -->
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      padding-bottom: 5rem;
+    }
+    .card {
+      background-color: #111;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+    .chart-container {
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+    label, input, .form-label, .form-control {
+      color: #fff;
+    }
+    .form-control {
+      background-color: #222;
+      border: 1px solid #444;
+    }
+    .volver-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1050;
+    }
+  </style>
 </head>
 <body>
   <div class="container py-5">
-    <h1 class="text-center fw-bold">Calculadora de IMC</h1>
+    <h1 class="text-center fw-bold text-white">🧮 Calculadora de IMC</h1>
 
     <div class="row justify-content-center mt-4">
       <div class="col-md-6">
         <div class="card">
-          <label class="form-label">Peso (kg)</label>
+          <label class="form-label">⚖️ Peso (kg)</label>
           <input type="number" id="peso" class="form-control mb-3" placeholder="Ej: 70">
 
-          <label class="form-label">Altura (cm)</label>
+          <label class="form-label">📏 Altura (cm)</label>
           <input type="number" id="altura" class="form-control mb-3" placeholder="Ej: 170">
 
-          <button onclick="calcularIMC()" class="btn btn-info w-100">Calcular IMC</button>
+          <button onclick="calcularIMC()" class="btn btn-info w-100">✅ Calcular IMC</button>
 
-          <div id="resultado" class="text-center mt-4 fs-5 fw-bold"></div>
+          <div id="resultado" class="text-center mt-4 fs-5 fw-bold text-white"></div>
           <div id="peso-ideal" class="text-center mt-2 text-secondary"></div>
         </div>
       </div>
@@ -60,7 +86,7 @@
     </div>
   </div>
 
-  <a href="menu.html" class="btn btn-light volver-btn">← Volver</a>
+  <a href="menu.html" class="btn btn-light volver-btn">⬅️ Volver</a>
 
   <script>
     let grafico = null;
@@ -81,28 +107,31 @@
       const imc = peso / (alturaM * alturaM);
       let clasificacion = "";
 
-      if (imc < 18.5) clasificacion = "Bajo peso";
-      else if (imc < 25) clasificacion = "Normal";
-      else if (imc < 30) clasificacion = "Sobrepeso";
-      else clasificacion = "Obesidad";
+      if (imc < 18.5) clasificacion = "📉 Bajo peso";
+      else if (imc < 25) clasificacion = "✅ Normal";
+      else if (imc < 30) clasificacion = "⚠️ Sobrepeso";
+      else clasificacion = "❗ Obesidad";
 
       resultado.innerHTML = `Tu IMC es <strong>${imc.toFixed(2)}</strong> (${clasificacion})`;
 
       const pesoIdealMin = 18.5 * (alturaM * alturaM);
       const pesoIdealMax = 24.9 * (alturaM * alturaM);
 
+      let diferencia = 0;
       let mensajeExtra = "";
+
       if (peso < pesoIdealMin) {
-        const diferencia = (pesoIdealMin - peso).toFixed(1);
+        diferencia = (pesoIdealMin - peso).toFixed(1);
         mensajeExtra = `Deberías aumentar al menos <strong>${diferencia} kg</strong> para estar en el rango saludable.`;
       } else if (peso > pesoIdealMax) {
-        const diferencia = (peso - pesoIdealMax).toFixed(1);
+        diferencia = (peso - pesoIdealMax).toFixed(1);
         mensajeExtra = `Deberías bajar al menos <strong>${diferencia} kg</strong> para entrar en el rango saludable.`;
       } else {
-        mensajeExtra = "Estás dentro de tu peso ideal. ¡Bien hecho!";
+        mensajeExtra = "🎉 Estás dentro de tu peso ideal. ¡Bien hecho!";
       }
 
       infoIdeal.innerHTML = `Tu peso ideal está entre <strong>${pesoIdealMin.toFixed(1)} kg</strong> y <strong>${pesoIdealMax.toFixed(1)} kg</strong>.<br>${mensajeExtra}`;
+
       mostrarGrafico(imc);
     }
 
