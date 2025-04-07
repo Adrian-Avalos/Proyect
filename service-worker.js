@@ -4,12 +4,14 @@ const urlsToCache = [
   "menu.html",
   "Calculadora-Ncompl.html",
   "imc.html",
+  "vtc.html",
   "manifest.json",
   "imagenes/icono-192.png",
   "imagenes/icono-512.png",
   "imagenes/icono-180.png",
   "js/Calculadora-Ncompl.js",
   "js/index.js",
+  "js/menu.js",
   "datos/datos.js"
 ];
 
