@@ -1,3 +1,5 @@
+// © 2025 Ramón Adrian Avalos Verá (GitHub: Adrian-Avalos)
+// Prohibida la copia o uso comercial sin autorización.
 let alimentosSeleccionados = [], grafico = null;
 const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
 
