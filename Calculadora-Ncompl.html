@@ -144,7 +144,7 @@
     <div id="lista-desayuno" class="tabla-comida d-none"></div>
   </div>
   <div class="grupo-comida">
-  <h3 class="titulo-grupo" onclick="toggleGrupo('media_manana')">🍌 Media mañana</h3>
+  <h3 class="titulo-grupo" onclick="toggleGrupo('media_manana')">🥤 Media mañana</h3>
   <div id="lista-media_manana" class="tabla-comida d-none"></div>
   </div>
   <div class="grupo-comida">
@@ -160,7 +160,7 @@
     <div id="lista-cena" class="tabla-comida d-none"></div>
   </div>
   <div class="grupo-comida">
-  <h3 class="titulo-grupo" onclick="toggleGrupo('colacion')">🥛 Colación</h3>
+  <h3 class="titulo-grupo" onclick="toggleGrupo('colacion')">🍽️ Colación</h3>
   <div id="lista-colacion" class="tabla-comida d-none"></div>
 </div>
 </div>
@@ -182,7 +182,10 @@
       'https://djbuwtemavldytssbicb.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqYnV3dGVtYXZsZHl0c3NiaWNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM2ODIxOTMsImV4cCI6MjA1OTI1ODE5M30.VBwS5W5qEFaBVeXXITpGLZa5JSvXkZuaEIiYd33-oy4'
     );
-
+  
+    // ✅ Cargar los datos desde localStorage al iniciar
+  cargarLocalStorage();
+    
     const columnas = [
       "valor_energetico", "agua", "proteinas", "lipidos_totales", "colesterol",
       "ac_grasos_saturados", "ac_grasos_monoinsaturados", "ac_grasos_poliinsaturados", "ac_grasos_trans",
@@ -202,6 +205,21 @@
       cena: [],
       colacion: []
     };
+
+        function guardarLocalStorage() {
+      localStorage.setItem('alimentosPorGrupo', JSON.stringify(alimentosSeleccionados));
+    }
+    
+    // Cargar desde localStorage si existen datos
+    function cargarLocalStorage() {
+      const datos = localStorage.getItem('alimentosPorGrupo');
+      if (datos) {
+        alimentosSeleccionados = JSON.parse(datos);
+        Object.keys(alimentosSeleccionados).forEach(tipo => {
+          actualizarTabla(tipo);
+        });
+      }
+    }
 
     function convertirANumero(valor) {
       if (!valor) return 0;
@@ -259,7 +277,7 @@
       actualizarTabla(tipo);
     };
 
-             function actualizarTabla(tipo) {
+     function actualizarTabla(tipo) {
         const contenedor = document.getElementById(`lista-${tipo}`);
         contenedor.innerHTML = `
           <div class="table-responsive">
@@ -267,6 +285,10 @@
               <thead><tr id="header-${tipo}"></tr></thead>
               <tbody id="body-${tipo}"></tbody>
             </table>
+          </div>
+          <div class="text-end mt-2">
+            <button class="btn btn-sm btn-outline-danger" onclick='eliminarGrupo("${tipo}")'>🗑️ Vaciar grupo</button>
+            <button class="btn btn-sm btn-outline-success ms-2" onclick='exportarGrupo("${tipo}")'>⬇️ Exportar</button>
           </div>
         `;
       
@@ -279,6 +301,8 @@
         });
       
         const cuerpo = document.getElementById(`body-${tipo}`);
+        let subtotal = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
+      
         alimentosSeleccionados[tipo].forEach((a, i) => {
           let fila = `<tr>
             <td>
@@ -287,50 +311,57 @@
             </td>
             <td title="${a.alimento}">${a.alimento}</td>
             <td>${a.cantidad} ${a.unidad}</td>`;
+      
           columnas.forEach(k => {
             const valorNumerico = convertirANumero(a[k]) * a.factor;
             fila += `<td>${isNaN(valorNumerico) ? '-' : valorNumerico.toFixed(1)}</td>`;
           });
+      
+          subtotal.calorias += convertirANumero(a.valor_energetico) * a.factor;
+          subtotal.hc += convertirANumero(a.carbohidratos_disponibles) * a.factor;
+          subtotal.proteinas += convertirANumero(a.proteinas) * a.factor;
+          subtotal.grasas += convertirANumero(a.lipidos_totales) * a.factor;
+      
           fila += '</tr>';
           cuerpo.innerHTML += fila;
         });
       
-        // Subtotal de calorías por grupo
-        let subtotal = { calorias: 0 };
-        alimentosSeleccionados[tipo].forEach(a => {
-          subtotal.calorias += convertirANumero(a.valor_energetico) * a.factor;
-        });
+        contenedor.innerHTML += `
+          <div class="text-end fw-bold mt-2">Subtotal: 
+            ${subtotal.calorias.toFixed(1)} cal | 
+            ${subtotal.hc.toFixed(1)}g HC | 
+            ${subtotal.proteinas.toFixed(1)}g Prot | 
+            ${subtotal.grasas.toFixed(1)}g Grasas
+          </div>
+        `;
       
-        // Mostrar debajo de la tabla
-        const resumenHTML = `<div class="text-end fw-bold mt-2">Subtotal: ${subtotal.calorias.toFixed(1)} cal</div>`;
-        contenedor.innerHTML += resumenHTML;
-      
-        calcularTotales(); // Actualiza el total general
+        calcularTotales();
+        guardarLocalStorage();
       }
 
-
-
-    function calcularTotales() {
-      const t = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
-            Object.values(alimentosSeleccionados).forEach(lista => {
-        lista.forEach(a => {
-          t.calorias += convertirANumero(a.valor_energetico) * a.factor;
-          t.hc += convertirANumero(a.carbohidratos_disponibles) * a.factor;
-          t.proteinas += convertirANumero(a.proteinas) * a.factor;
-          t.grasas += convertirANumero(a.lipidos_totales) * a.factor;
+      function calcularTotales() {
+        const t = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
+              Object.values(alimentosSeleccionados).forEach(lista => {
+          lista.forEach(a => {
+            t.calorias += convertirANumero(a.valor_energetico) * a.factor;
+            t.hc += convertirANumero(a.carbohidratos_disponibles) * a.factor;
+            t.proteinas += convertirANumero(a.proteinas) * a.factor;
+            t.grasas += convertirANumero(a.lipidos_totales) * a.factor;
+          });
         });
-      });
 
-      document.getElementById('totales').textContent =
+           document.getElementById('totales').textContent =
         `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
       actualizarGrafico(t);
-    }
+      }
 
+      // ✅ Función para eliminar un alimento individual
       window.eliminarAlimento = function (tipo, index) {
         alimentosSeleccionados[tipo].splice(index, 1);
         actualizarTabla(tipo);
       };
       
+      // ✅ Función para modificar cantidad de un alimento
       window.modificarCantidad = function (tipo, index) {
         const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[tipo][index].cantidad);
         if (nueva && !isNaN(nueva) && nueva > 0) {
@@ -339,14 +370,37 @@
           actualizarTabla(tipo);
         }
       };
+      
+      // ✅ NUEVO: Eliminar todos los alimentos del grupo
+      function eliminarGrupo(tipo) {
+        if (confirm(`¿Seguro que querés eliminar todos los alimentos de ${tipo}?`)) {
+          alimentosSeleccionados[tipo] = [];
+          actualizarTabla(tipo);
+        }
+      }
+            function exportarGrupo(tipo) {
+          const datos = alimentosSeleccionados[tipo];
+          if (!datos.length) return alert('No hay datos para exportar.');
+        
+          let csv = "Alimento,Cantidad (g),Calorías,HC,Proteínas,Grasas\n";
+          datos.forEach(a => {
+            csv += `"${a.alimento}",${a.cantidad},${(convertirANumero(a.valor_energetico)*a.factor).toFixed(1)},${(convertirANumero(a.carbohidratos_disponibles)*a.factor).toFixed(1)},${(convertirANumero(a.proteinas)*a.factor).toFixed(1)},${(convertirANumero(a.lipidos_totales)*a.factor).toFixed(1)}\n`;
+          });
+        
+          const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `${tipo}_nutricion.csv`;
+          link.click();
+        }
 
-
-    const toggleBtn = document.getElementById('toggle-detalle');
-    const detalleAlimento = document.getElementById('detalle-alimento');
-    toggleBtn.addEventListener('click', () => {
-      const activo = detalleAlimento.classList.toggle('activo');
-      toggleBtn.textContent = activo ? 'Ocultar detalles nutricionales' : 'Mostrar detalles nutricionales';
-    });
+      
+      const toggleBtn = document.getElementById('toggle-detalle');
+      const detalleAlimento = document.getElementById('detalle-alimento');
+      toggleBtn.addEventListener('click', () => {
+        const activo = detalleAlimento.classList.toggle('activo');
+        toggleBtn.textContent = activo ? 'Ocultar detalles nutricionales' : 'Mostrar detalles nutricionales';
+      });
 
     function actualizarGrafico(t) {
       const ctxMacros = document.getElementById('graficoCircular').getContext('2d');
