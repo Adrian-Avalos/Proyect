@@ -8,10 +8,8 @@ const urlsToCache = [
   "imagenes/icono-192.png",
   "imagenes/icono-512.png",
   "imagenes/icono-180.png",
-  "imagenes/fondo-comida.gif",
-  "sonido/sonido.wav",
-  "css/estilo.css",
-  "js/app.js",
+  "js/Calculadora-Ncompl.js",
+  "js/index.js",
   "datos/datos.js"
 ];
 
