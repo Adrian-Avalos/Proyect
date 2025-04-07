@@ -47,6 +47,35 @@
       max-height: 1000px;
       transition: max-height 0.8s ease;
     }
+        .table td:nth-child(2), .table th:nth-child(2) {
+      max-width: 200px; /* Ajustá según te convenga */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+        .table td:nth-child(2):hover {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+      background-color: #222; /* para resaltar el hover */
+      z-index: 10;
+      position: relative;
+    }
+        .titulo-grupo {
+      background: #222;
+      padding: 0.7rem 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      border-radius: 0.5rem;
+    }
+    .tabla-comida {
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .d-none {
+      display: none;
+    }
+
   </style>
 </head>
 <body>
@@ -81,6 +110,15 @@
           <option value="">Seleccioná un alimento</option>
         </select>
       </div>
+      <div class="col-md-4">
+        <label class="form-label">Tipo de comida</label>
+        <select id="tipo-comida" class="form-select">
+          <option value="desayuno">Desayuno</option>
+          <option value="almuerzo">Almuerzo</option>
+          <option value="merienda">Merienda</option>
+          <option value="cena">Cena</option>
+        </select>
+      </div>
       <div class="col-md-3">
         <label class="form-label">Cantidad</label>
         <input type="number" id="gramos" class="form-control" placeholder="Cantidad">
@@ -95,14 +133,25 @@
     <div id="detalle-alimento" class="row g-2 mt-3"></div>
   </div>
 
-  <div class="table-responsive mt-4">
-    <table class="table table-striped table-bordered">
-      <thead>
-        <tr id="header-row"></tr>
-      </thead>
-      <tbody id="tabla-alimentos"></tbody>
-    </table>
+<div id="listas-alimentos" class="mt-4">
+  <div class="grupo-comida">
+    <h3 class="titulo-grupo" onclick="toggleGrupo('desayuno')">🍳 Desayuno</h3>
+    <div id="lista-desayuno" class="tabla-comida d-none"></div>
   </div>
+  <div class="grupo-comida">
+    <h3 class="titulo-grupo" onclick="toggleGrupo('almuerzo')">🍽️ Almuerzo</h3>
+    <div id="lista-almuerzo" class="tabla-comida d-none"></div>
+  </div>
+  <div class="grupo-comida">
+    <h3 class="titulo-grupo" onclick="toggleGrupo('merienda')">☕ Merienda</h3>
+    <div id="lista-merienda" class="tabla-comida d-none"></div>
+  </div>
+  <div class="grupo-comida">
+    <h3 class="titulo-grupo" onclick="toggleGrupo('cena')">🌙 Cena</h3>
+    <div id="lista-cena" class="tabla-comida d-none"></div>
+  </div>
+</div>
+
 <div id="totales" class="text-center fw-bold fs-5"></div>
 
 <!-- Agregá esta línea -->
@@ -132,21 +181,17 @@
     ];
 
     const macrosObjetivo = { calorias: 2488, hc: 311, proteinas: 124, grasas: 82 };
-    let alimentosSeleccionados = [];
+    let alimentosSeleccionados = {
+        desayuno: [],
+        almuerzo: [],
+        merienda: [],
+        cena: []
+      };
 
     function convertirANumero(valor) {
       if (!valor) return 0;
       return parseFloat(valor.toString().replace(',', '.')) || 0;
     }
-
-    const headerRow = document.getElementById('header-row');
-    headerRow.innerHTML = '<th>ALIMENTO</th><th>CANTIDAD</th>';
-    columnas.forEach(col => {
-      const th = document.createElement('th');
-      th.textContent = col.replace(/_/g, ' ').toUpperCase();
-      headerRow.appendChild(th);
-    });
-    headerRow.innerHTML += '<th>Acciones</th>';
 
     document.getElementById('buscador').addEventListener('input', cargarAlimentos);
 
@@ -188,59 +233,87 @@
       }
     };
 
-    window.agregarAlimento = function () {
+       window.agregarAlimento = function () {
+      const tipo = document.getElementById('tipo-comida').value;
       const a = window.alimentoActual;
       const cantidad = parseFloat(document.getElementById('gramos').value);
-      if (!cantidad || cantidad <= 0 || !a) return alert('Completá todos los campos.');
+      if (!cantidad || cantidad <= 0 || !a || !tipo) return alert('Completá todos los campos.');
+    
       const factor = cantidad / 100;
-      alimentosSeleccionados.push({ ...a, cantidad, unidad: 'g', factor });
-      actualizarTabla();
+      alimentosSeleccionados[tipo].push({ ...a, cantidad, unidad: 'g', factor });
+      actualizarTabla(tipo);
     };
 
-    function actualizarTabla() {
-      const tabla = document.getElementById('tabla-alimentos');
-      tabla.innerHTML = '';
-      alimentosSeleccionados.forEach((a, i) => {
-        let fila = `<tr><td>${a.alimento}</td><td>${a.cantidad} ${a.unidad}</td>`;
+       function actualizarTabla(tipo) {
+      const contenedor = document.getElementById(`lista-${tipo}`);
+      contenedor.innerHTML = `
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead><tr id="header-${tipo}"></tr></thead>
+            <tbody id="body-${tipo}"></tbody>
+          </table>
+        </div>
+      `;
+    
+      const headerRow = document.getElementById(`header-${tipo}`);
+      headerRow.innerHTML = '<th>Acciones</th><th>ALIMENTO</th><th>CANTIDAD</th>';
+      columnas.forEach(col => {
+        const th = document.createElement('th');
+        th.textContent = col.replace(/_/g, ' ').toUpperCase();
+        headerRow.appendChild(th);
+      });
+    
+      const cuerpo = document.getElementById(`body-${tipo}`);
+      alimentosSeleccionados[tipo].forEach((a, i) => {
+        let fila = `<tr>
+          <td>
+            <button class='btn btn-warning btn-sm me-1' onclick='modificarCantidad("${tipo}", ${i})'>✏️</button>
+            <button class='btn btn-danger btn-sm' onclick='eliminarAlimento("${tipo}", ${i})'>❌</button>
+          </td>
+          <td title="${a.alimento}">${a.alimento}</td>
+          <td>${a.cantidad} ${a.unidad}</td>`;
         columnas.forEach(k => {
           const valorNumerico = convertirANumero(a[k]) * a.factor;
           fila += `<td>${isNaN(valorNumerico) ? '-' : valorNumerico.toFixed(1)}</td>`;
         });
-        fila += `<td>
-          <button class='btn btn-warning btn-sm' onclick='modificarCantidad(${i})'>✏️</button>
-          <button class='btn btn-danger btn-sm' onclick='eliminarAlimento(${i})'>❌</button>
-        </td></tr>`;
-        tabla.innerHTML += fila;
+        fila += '</tr>';
+        cuerpo.innerHTML += fila;
       });
-      calcularTotales();
+    
+      calcularTotales(); // Si querés hacer totales generales
     }
+
 
     function calcularTotales() {
       const t = { calorias: 0, hc: 0, proteinas: 0, grasas: 0 };
-      alimentosSeleccionados.forEach(a => {
-        t.calorias += convertirANumero(a.valor_energetico) * a.factor;
-        t.hc += convertirANumero(a.carbohidratos_disponibles) * a.factor;
-        t.proteinas += convertirANumero(a.proteinas) * a.factor;
-        t.grasas += convertirANumero(a.lipidos_totales) * a.factor;
+            Object.values(alimentosSeleccionados).forEach(lista => {
+        lista.forEach(a => {
+          t.calorias += convertirANumero(a.valor_energetico) * a.factor;
+          t.hc += convertirANumero(a.carbohidratos_disponibles) * a.factor;
+          t.proteinas += convertirANumero(a.proteinas) * a.factor;
+          t.grasas += convertirANumero(a.lipidos_totales) * a.factor;
+        });
       });
+
       document.getElementById('totales').textContent =
         `Totales: ${t.calorias.toFixed(1)} cal | ${t.hc.toFixed(1)}g HC | ${t.proteinas.toFixed(1)}g Prot | ${t.grasas.toFixed(1)}g Grasas`;
       actualizarGrafico(t);
     }
 
-    window.eliminarAlimento = function (index) {
-      alimentosSeleccionados.splice(index, 1);
-      actualizarTabla();
-    };
+      window.eliminarAlimento = function (tipo, index) {
+        alimentosSeleccionados[tipo].splice(index, 1);
+        actualizarTabla(tipo);
+      };
+      
+      window.modificarCantidad = function (tipo, index) {
+        const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[tipo][index].cantidad);
+        if (nueva && !isNaN(nueva) && nueva > 0) {
+          alimentosSeleccionados[tipo][index].cantidad = parseFloat(nueva);
+          alimentosSeleccionados[tipo][index].factor = nueva / 100;
+          actualizarTabla(tipo);
+        }
+      };
 
-    window.modificarCantidad = function (index) {
-      const nueva = prompt("Ingresá nueva cantidad:", alimentosSeleccionados[index].cantidad);
-      if (nueva && !isNaN(nueva) && nueva > 0) {
-        alimentosSeleccionados[index].cantidad = parseFloat(nueva);
-        alimentosSeleccionados[index].factor = nueva / 100;
-        actualizarTabla();
-      }
-    };
 
     const toggleBtn = document.getElementById('toggle-detalle');
     const detalleAlimento = document.getElementById('detalle-alimento');
@@ -273,6 +346,10 @@
       document.getElementById('calorias-restantes').innerHTML = `Todavía puedes comer <strong>${(macrosObjetivo.calorias - t.calorias).toFixed(0)}</strong> calorías`;
     }
   });
+      function toggleGrupo(tipo) {
+      const div = document.getElementById(`lista-${tipo}`);
+      div.classList.toggle('d-none');
+    }
 </script>
 </body>
 </html>
