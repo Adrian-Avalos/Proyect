@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#28a745">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Calculadora VTC</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="img/icono-192.png">
+  <link rel="apple-touch-icon" href="img/icono-180.png">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      padding-bottom: 5rem;
+    }
+    .card {
+      background-color: #111;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+    label, input, select {
+      color: #fff;
+    }
+    .form-control, .form-select {
+      background-color: #222;
+      border: 1px solid #444;
+      color: #fff;
+    }
+    .volver-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1050;
+    }
+    .chart-container {
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="text-center fw-bold text-white">🔥 Calculadora de VTC</h1>
+
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <label class="form-label">⚖️ Peso (kg)</label>
+          <input type="number" id="peso" class="form-control mb-3" placeholder="Ej: 70">
+
+          <label class="form-label">🎯 Objetivo / Actividad</label>
+          <select id="factor" class="form-select mb-3">
+            <option value="20">20 kcal/kg (Reposo / Bajar de peso)</option>
+            <option value="25">25 kcal/kg (Moderado)</option>
+            <option value="30" selected>30 kcal/kg (Mantenimiento)</option>
+            <option value="35">35 kcal/kg (Aumento / Activo)</option>
+          </select>
+
+          <button onclick="calcularVTC()" class="btn btn-warning w-100">✅ Calcular VTC</button>
+
+          <div id="resultado" class="text-center mt-4 fs-5 fw-bold text-white"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="graficoVTC"></canvas>
+    </div>
+  </div>
+
+  <a href="menu.html" class="btn btn-light volver-btn">⬅️ Volver</a>
+
+  <script>
+    let graficoVTC = null;
+
+    function calcularVTC() {
+      const peso = parseFloat(document.getElementById('peso').value);
+      const factor = parseFloat(document.getElementById('factor').value);
+      const resultado = document.getElementById('resultado');
+
+      if (!peso || peso <= 0) {
+        resultado.textContent = 'Por favor, ingresá un peso válido.';
+        return;
+      }
+
+      const total = peso * factor;
+      const macros = {
+        hc: total * 0.55,
+        prot: total * 0.15,
+        grasa: total * 0.30
+      };
+
+      resultado.innerHTML = `
+        VTC Total: <strong>${total.toFixed(0)} kcal</strong><br>
+        Carbohidratos: <strong>${(macros.hc / 4).toFixed(1)}g</strong><br>
+        Proteínas: <strong>${(macros.prot / 4).toFixed(1)}g</strong><br>
+        Grasas: <strong>${(macros.grasa / 9).toFixed(1)}g</strong>
+      `;
+
+      mostrarGrafico(macros);
+    }
+
+    function mostrarGrafico(macros) {
+      const ctx = document.getElementById('graficoVTC').getContext('2d');
+      if (graficoVTC) graficoVTC.destroy();
+
+      graficoVTC = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Carbohidratos', 'Proteínas', 'Grasas'],
+          datasets: [{
+            data: [macros.hc, macros.prot, macros.grasa],
+            backgroundColor: ['#ffc107', '#198754', '#dc3545'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          plugins: {
+            legend: {
+              labels: { color: '#fff' }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
 
