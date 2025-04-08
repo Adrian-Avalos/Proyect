@@ -39,7 +39,7 @@
 
   if (user === "ADMINISTRADOR" && pass === "123**321") {
     location.href = "menu.html";  
-  } else if (user === "JACKELINE" && pass === "1234") { 
+  } else if (user === "USUARIO" && pass === "1234") { 
     location.href = "menu.html";
   } else {
     alert("Usuario o contraseña incorrectos");
