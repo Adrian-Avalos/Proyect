@@ -44,5 +44,3 @@
       } else {
         alert("Usuario o contraseña incorrectos");
       }
-        
-    }
