@@ -31,35 +31,25 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
   </script>
 
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      overflow: hidden;
+      background-color: #fff;
       font-family: 'Helvetica Neue', sans-serif;
-      height: 100%;
-    }
-
-    /* Fondo de video */
-    #videoBackground {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: -1;
+      overflow: hidden;
     }
 
     .slide {
       height: 100vh;
       width: 100vw;
+      background-size: cover;
+      background-position: center;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       padding: 30px;
       color: #fff;
-      position: relative;
-      background: rgba(0, 0, 0, 0.5); /* Oscurece para mejor contraste */
+      position: absolute;
+      transition: transform 0.5s ease-in-out;
     }
 
     .slide h2 {
@@ -86,6 +76,10 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       border: none;
     }
 
+    .slide1 { background-image: url('imagenes/slide6.jpeg'); z-index: 3; }
+    .slide2 { background-image: url('imagenes/slide5.png'); z-index: 2; }
+    .slide3 { background-image: url('imagenes/slide4.jpg'); z-index: 1; }
+
     .dots {
       display: flex;
       justify-content: center;
@@ -105,7 +99,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       background-color: #28a745;
     }
 
-    /* LOGIN MODAL */
+    /* LOGIN FULLSCREEN con animación */
     #modalLogin {
       position: fixed;
       inset: 0;
@@ -176,19 +170,45 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
 </head>
 <body>
 
-  <!-- 🎥 VIDEO DE FONDO -->
-  <video id="videoBackground" autoplay muted loop>
-    <source src="imagenes/0005860727C4BC.mov" type="video/mp4">
-    Tu navegador no soporta video HTML5.
-  </video>
-
-  <!-- CONTENIDO PRINCIPAL -->
+  <!-- SLIDES -->
   <div id="slidesContainer">
-    <div class="slide">
+    <div class="slide slide1">
+      <div>
+        <h2>Conoce qué comes</h2>
+        <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide slide2">
+      <div>
+        <h2>Vive de forma saludable</h2>
+        <p>Planifica tu alimentación y siéntete genial día a día.</p>
+        <div class="dots">
+          <div class="dot"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="slide-buttons">
+          <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide slide3">
       <div>
         <h2>Tu nutrición, en tus manos</h2>
         <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
         <div class="dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
           <div class="dot active"></div>
         </div>
         <div class="slide-buttons">
@@ -220,7 +240,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
   </div>
 
   <!-- SCRIPTS -->
-  <script src="js/index.js"></script>
+<script src="js/index.js"></script>
 
 </body>
 </html>
