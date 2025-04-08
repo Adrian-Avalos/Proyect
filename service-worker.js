@@ -1,6 +1,5 @@
 // © 2025 Ramón Adrian Avalos Verá (GitHub: Adrian-Avalos)
 // Prohibida la copia o uso comercial sin autorización.
-
 const CACHE_NAME = "nutricion-cache-v2";
 const urlsToCache = [
   "index.html",
