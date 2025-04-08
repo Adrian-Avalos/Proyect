@@ -38,8 +38,11 @@
       const pass = document.getElementById("password").value.trim();
 
       if (user === "ADMINISTRADOR" && pass === "123**321") {
-        location.href = "menu.html";
+        location.href = "menu.html";  
+      } else if {user === "JACKELINE" && pass === "1234") { 
+          location.href = "menu.html";
       } else {
         alert("Usuario o contraseña incorrectos");
       }
+        
     }
