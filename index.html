@@ -5,19 +5,31 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#000000" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="imagenes/icono.ico" />
-  <link rel="icon" type="image/png" href="imagenes/icono.png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Manifest e íconos PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="imagenes/icono.ico">
+  <link rel="icon" type="image/png" href="imagenes/icono.png">
+
   <title>Nutrición-APP</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Supabase v1.x (funciona como en tu ejemplo original) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
 
   <style>
     body {
@@ -215,6 +227,6 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
     </form>
   </div>
 
-<script src="js/app.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>
