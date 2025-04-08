@@ -29,24 +29,36 @@ let graficoMacros = null;
 
     document.getElementById('buscador').addEventListener('input', cargarAlimentos);
 
-    async function cargarAlimentos() {
-      const buscar = document.getElementById('buscador').value.trim().toLowerCase();
-      const select = document.getElementById('alimento-select');
-      select.innerHTML = '<option value="">Seleccioná un alimento</option>';
+async function cargarAlimentos() {
+  const buscar = document.getElementById('buscador').value.trim().toLowerCase();
+  const select = document.getElementById('alimento-select');
+  select.innerHTML = '<option value="">Seleccioná un alimento</option>';
 
-      let query = client.from('alimentos_detallados').select('id, alimento').order('alimento', { ascending: true });
-      if (buscar) query = query.ilike('alimento', `%${buscar}%`);
-
-      const { data, error } = await query;
-      if (error) return console.error('Error al cargar alimentos:', error);
-
-      data.forEach(({ id, alimento }) => {
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = alimento;
-        select.appendChild(opt);
-      });
-    }
+        // 👇 Incluí las columnas necesarias
+        let query = client
+          .from('alimentos_detallados')
+          .select('id, alimento, valor_energetico, carbohidratos_disponibles, proteinas, lipidos_totales')
+          .order('alimento', { ascending: true });
+      
+        if (buscar) query = query.ilike('alimento', `%${buscar}%`);
+      
+        const { data, error } = await query;
+        if (error) return console.error('Error al cargar alimentos:', error);
+      
+        data.forEach(({ id, alimento, valor_energetico, carbohidratos_disponibles, proteinas, lipidos_totales }) => {
+          const opt = document.createElement('option');
+      
+          const cal = convertirANumero(valor_energetico).toFixed(0);
+          const hc = convertirANumero(carbohidratos_disponibles).toFixed(1);
+          const prot = convertirANumero(proteinas).toFixed(1);
+          const grasa = convertirANumero(lipidos_totales).toFixed(1);
+      
+          opt.value = id;
+          opt.textContent = `${alimento} | ${cal} cal | ${hc} HC | ${prot} Prot | ${grasa} Grasas`;
+      
+          select.appendChild(opt);
+        });
+      }
 
     window.mostrarDatosAlimento = async function () {
       const id = document.getElementById('alimento-select').value;
