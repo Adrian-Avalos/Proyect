@@ -54,7 +54,8 @@ async function cargarAlimentos() {
           const grasa = convertirANumero(lipidos_totales).toFixed(1);
       
           opt.value = id;
-          opt.textContent = `${alimento} | ${cal} cal | ${hc} HC | ${prot} Prot | ${grasa} Grasas`;
+          opt.textContent = `${alimento} (por 100g) | ${cal} cal | ${hc} HC | ${prot} Prot | ${grasa} Grasas`;
+
       
           select.appendChild(opt);
         });
