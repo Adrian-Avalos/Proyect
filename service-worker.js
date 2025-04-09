@@ -2,11 +2,14 @@
 // Prohibida la copia o uso comercial sin autorización.
 const CACHE_NAME = "nutricion-cache-v2";
 const urlsToCache = [
+  // html
   "index.html",
   "menu.html",
   "Calculadora-Ncompl.html",
+  "Calculadora-Nor.html",
   "imc.html",
   "vtc.html",
+  // json
   "manifest.json",
   "imagenes/icono-192.png",
   "imagenes/icono-512.png",
@@ -14,7 +17,14 @@ const urlsToCache = [
   "js/Calculadora-Ncompl.js",
   "js/index.js",
   "js/menu.js",
+  "js/bootstrap.bundle.min.js",
+  "js/particles.min.js",
+   // datos
   "datos/datos.js"
+  // css
+  "css/bootstrap.min.css",
+  "css/fonts/bootstrap-icons.woff",
+  "css/fonts/bootstrap-icons.woff2",
 ];
 
 // Instala y guarda en caché
