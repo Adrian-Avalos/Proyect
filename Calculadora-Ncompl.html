@@ -36,9 +36,51 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       });
     }
   </script>
-
+  
   <!-- Estilos personalizados -->
   <style>
+
+      /* En tu <style> */
+     #boton-flotante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+    }
+    
+    #boton-flotante > button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    #menu-flotante {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+    }
+    
+    #menu-flotante button {
+      background-color: #f8f9fa;
+      border: none;
+      padding: 8px;
+      margin: 4px 0;
+      cursor: pointer;
+      text-align: left;
+    }
+        
     body {
       background-color: #000;
       color: #fff;
