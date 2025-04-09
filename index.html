@@ -19,8 +19,9 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
   <title>Nutrición-APP</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Service Worker -->
-  <script>
+  <!-- Supabase v1.x (funciona como en tu ejemplo original) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
@@ -99,7 +100,6 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       background-color: #28a745;
     }
 
-    /* LOGIN FULLSCREEN con animación */
     #modalLogin {
       position: fixed;
       inset: 0;
@@ -176,11 +176,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       <div>
         <h2>Conoce qué comes</h2>
         <p>Sigue fácilmente tu ingesta de calorías y nutrientes utilizando nuestra gran base de datos.</p>
-        <div class="dots">
-          <div class="dot active"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
+        <div class="dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
         <div class="slide-buttons">
           <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
@@ -191,11 +187,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       <div>
         <h2>Vive de forma saludable</h2>
         <p>Planifica tu alimentación y siéntete genial día a día.</p>
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot active"></div>
-          <div class="dot"></div>
-        </div>
+        <div class="dots"><div class="dot"></div><div class="dot active"></div><div class="dot"></div></div>
         <div class="slide-buttons">
           <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
@@ -206,11 +198,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       <div>
         <h2>Tu nutrición, en tus manos</h2>
         <p>Una herramienta clara y práctica para alcanzar tus metas de salud.</p>
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot active"></div>
-        </div>
+        <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot active"></div></div>
         <div class="slide-buttons">
           <button class="btn btn-light btn-slide" onclick="irLogin()">Inicia sesión</button>
         </div>
@@ -218,18 +206,18 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
     </div>
   </div>
 
-  <!-- LOGIN -->
+  <!-- LOGIN MODAL -->
   <div id="modalLogin">
     <div class="cerrar" onclick="cerrarModal()">✕</div>
     <h4>Inicia sesión</h4>
-    <form onsubmit="return validarLogin(event)" style="width: 100%; max-width: 350px;">
+    <form id="loginForm" style="width: 100%; max-width: 350px;">
       <div class="form-group">
         <label>Correo electrónico</label>
-        <input type="text" class="form-control" id="email" placeholder="ADMINISTRADOR" value="ADMINISTRADOR">
+        <input type="email" class="form-control" id="email" placeholder="Correo electrónico" required />
       </div>
       <div class="form-group input-group">
         <label>Contraseña</label>
-        <input type="password" class="form-control" id="password" placeholder="password">
+        <input type="password" class="form-control" id="password" placeholder="Contraseña" required />
         <span class="ver-pass" onclick="togglePassword()">👁️</span>
       </div>
       <button type="submit" class="btn-green">Inicia sesión</button>
@@ -239,8 +227,6 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
     </form>
   </div>
 
-  <!-- SCRIPTS -->
 <script src="js/index.js"></script>
-
 </body>
 </html>
