@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #0d1117;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .menu-container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding-top: 60px;
+    }
+
+    .menu-title {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    #vista-completa {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .menu-button {
+      width: 160px;
+      border: 2px solid white;
+      padding: 18px 12px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      text-align: center;
+    }
+
+    .menu-button:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-4px);
+    }
+
+    .menu-button i {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .menu-button .texto {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .menu-button .desc {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+
+    .list-group-item {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .list-group-item button {
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Fondo de partículas -->
+<div id="particles-js"></div>
+
+<!-- Contenido principal -->
+<div class="menu-container">
+  <div class="menu-title">Menú Principal</div>
+
+  <!-- Tarjetas del menú -->
+  <div id="vista-completa" class="d-flex mt-4"></div>
+
+  <!-- Listado de dietas guardadas -->
+  <div class="container mt-5" id="dietas-guardadas">
+    <h4 class="text-white text-center">📋 Dietas guardadas</h4>
+    <ul class="list-group mt-3" id="lista-dietas"></ul>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/particles.min.js"></script>
+<script>
+const opciones = [
+  {
+    texto: "IMC",
+    icono: "bi-person-lines-fill",
+    detalle: "Calculá tu índice de masa corporal",
+    ruta: "imc.html"
+  },
+  {
+    texto: "VTC",
+    icono: "bi-fire",
+    detalle: "Cuántas calorías quemás por día",
+    ruta: "vtc.html"
+  },
+  {
+    texto: "Calc",
+    icono: "bi-graph-up",
+    detalle: "Cálculo nutricional por alimento(DATOS-SARA 2)",
+    ruta: "Calculadora-Ncompl.html"
+  },
+  {
+    texto: "Calc Local",
+    icono: "bi-journal-check",
+    detalle: "Cálculo nutricional por alimento(DATOS-SIMPLE)",
+    ruta: "Calculadora-Nor.html"
+  },
+  {
+    texto: "Stats",
+    icono: "bi-bar-chart",
+    detalle: "Gráficos de tus avances",
+    ruta: "#"
+  }
+];
+
+function generarVistaCompleta() {
+  const contenedor = document.getElementById("vista-completa");
+  contenedor.innerHTML = "";
+  opciones.forEach(op => {
+    const btn = document.createElement("div");
+    btn.className = "menu-button";
+    btn.innerHTML = `
+      <i class="bi ${op.icono}"></i>
+      <div class="texto">${op.texto}</div>
+      <div class="desc">${op.detalle}</div>
+    `;
+    btn.onclick = () => window.location.href = op.ruta;
+    contenedor.appendChild(btn);
+  });
+}
+
+function mostrarListaDietasGuardadas() {
+  const lista = document.getElementById("lista-dietas");
+  lista.innerHTML = "";
+
+  const claves = Object.keys(localStorage);
+  if (claves.length === 0) {
+    lista.innerHTML = "<li class='list-group-item text-center'>No hay dietas guardadas</li>";
+    return;
+  }
+
+  claves.forEach(nombre => {
+    const li = document.createElement("li");
+    li.className = "list-group-item d-flex justify-content-between align-items-center";
+    li.innerHTML = `
+      <span>${nombre}</span>
+      <button class="btn btn-sm btn-danger" onclick="eliminarDietaPorNombre('${nombre}')">🗑️ Eliminar</button>
+    `;
+    lista.appendChild(li);
+  });
+}
+
+function eliminarDietaPorNombre(nombre) {
+  if (!confirm(`¿Eliminar la dieta "${nombre}"?`)) return;
+  localStorage.removeItem(nombre);
+  mostrarListaDietasGuardadas();
+  alert("Dieta eliminada.");
+}
+
+// Fondo animado
+particlesJS('particles-js', {
+  particles: {
+    number: { value: 60 },
+    color: { value: "#ffffff" },
+    shape: { type: "circle" },
+    opacity: { value: 0.5 },
+    size: { value: 3 },
+    line_linked: {
+      enable: true,
+      distance: 120,
+      color: "#ffffff",
+      opacity: 0.4,
+      width: 1
+    },
+    move: { enable: true, speed: 2 }
+  },
+  interactivity: {
+    events: { onhover: { enable: true, mode: "grab" } }
+  },
+  retina_detect: true
+});
+
+// Mostrar tarjetas y lista al iniciar
+document.addEventListener("DOMContentLoaded", () => {
+  generarVistaCompleta();
+  mostrarListaDietasGuardadas();
+});
+</script>
+</body>
+</html>
