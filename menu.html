@@ -1,20 +1,32 @@
-<!--
-© 2025 Ramón Adrian Avalos Verá (GitHub: Adrian-Avalos)
-Este código no puede ser copiado, modificado ni usado con fines comerciales sin permiso.
--->
+<!--© 2025 Ramón Adrian Avalos Verá (GitHub: Adrian-Avalos)
+Este código no puede ser copiado, modificado ni usado con fines comerciales sin permiso.-->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Menú App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#000000">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-icons.css" rel="stylesheet">
+
+  <title>App Nutricional</title>
+  <!-- Manifest e íconos PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="imagenes/icono.ico">
   <link rel="icon" type="image/png" href="imagenes/icono.png">
-  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+
+   <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+  </script>
 
   <style>
     body, html {
@@ -27,7 +39,7 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
       overflow-x: hidden;
     }
 
-    #tsparticles {
+    #particles-js {
       position: fixed;
       width: 100%;
       height: 100%;
@@ -102,19 +114,26 @@ Este código no puede ser copiado, modificado ni usado con fines comerciales sin
 </head>
 <body>
 
-<div id="tsparticles"></div>
+<!-- Fondo de partículas -->
+<div id="particles-js"></div>
 
+<!-- Contenido principal -->
 <div class="menu-container">
   <div class="menu-title">Menú Principal</div>
+
+  <!-- Tarjetas del menú -->
   <div id="vista-completa" class="d-flex mt-4"></div>
 
+  <!-- Listado de dietas guardadas -->
   <div class="container mt-5" id="dietas-guardadas">
     <h4 class="text-white text-center">📋 Dietas guardadas</h4>
     <ul class="list-group mt-3" id="lista-dietas"></ul>
   </div>
 </div>
 
+<!-- Scripts -->
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/particles.min.js"></script>
 <script>
 const opciones = [
   {
@@ -193,64 +212,30 @@ function eliminarDietaPorNombre(nombre) {
   alert("Dieta eliminada.");
 }
 
-// tsParticles: frutas pequeñas + conectadas entre sí + giro
-tsParticles.load("tsparticles", {
+// Fondo animado
+particlesJS('particles-js', {
   particles: {
-    number: { value: 35 },
-    shape: {
-      type: "image",
-      image: [
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046754.png", width: 24, height: 24 }, // Plato saludable
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046785.png", width: 24, height: 24 }, // Huevo frito
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046792.png", width: 24, height: 24 }, // Aguacate
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046769.png", width: 24, height: 24 }, // Pan integral
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046804.png", width: 24, height: 24 }, // Frutos secos
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046816.png", width: 24, height: 24 }, // Botella de agua
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046783.png", width: 24, height: 24 }, // Jugos
-  { src: "https://cdn-icons-png.flaticon.com/128/1046/1046809.png", width: 24, height: 24 }  // Carne
-]
-    },
-    size: {
-      value: 16,
-      animation: {
-        enable: false
-      }
-    },
-    move: {
+    number: { value: 60 },
+    color: { value: "#ffffff" },
+    shape: { type: "circle" },
+    opacity: { value: 0.5 },
+    size: { value: 3 },
+    line_linked: {
       enable: true,
-      speed: 1.8,
-      direction: "none",
-      outModes: { default: "bounce" },
-      angle: { value: 360 },
-      rotate: true
-    },
-    rotate: {
-      value: { min: 0, max: 360 },
-      animation: {
-        enable: true,
-        speed: 5,
-        sync: false
-      }
-    },
-    links: {
-      enable: true,
-      distance: 100,
+      distance: 120,
       color: "#ffffff",
-      opacity: 0.2,
+      opacity: 0.4,
       width: 1
-    }
-  },
-  background: {
-    color: "#0d1117"
+    },
+    move: { enable: true, speed: 2 }
   },
   interactivity: {
-    events: {
-      onhover: { enable: true, mode: "grab" }
-    }
+    events: { onhover: { enable: true, mode: "grab" } }
   },
   retina_detect: true
 });
 
+// Mostrar tarjetas y lista al iniciar
 document.addEventListener("DOMContentLoaded", () => {
   generarVistaCompleta();
   mostrarListaDietasGuardadas();
